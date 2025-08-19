@@ -10,14 +10,19 @@ SEC EDGAR API客户端库，提供：
 
 __version__ = "1.0.0"
 
+# SEC API Client 主模块
+# 提供访问SEC EDGAR数据库和XBRL数据的功能
+
 from .sec_client import SECClient
-from .document_retriever import DocumentRetriever
 from .xbrl_frames import XBRLFramesClient
 from .financial_analyzer import FinancialAnalyzer
+from .document_retriever import DocumentRetriever
+from .concept_explainer import ConceptExplainer
 
 __all__ = [
     'SECClient',
-    'DocumentRetriever', 
-    'XBRLFramesClient',
-    'FinancialAnalyzer'
+    'XBRLFramesClient', 
+    'FinancialAnalyzer',
+    'DocumentRetriever',
+    'ConceptExplainer'
 ]

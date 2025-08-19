@@ -97,6 +97,7 @@ def get_apple_10k_2024_data():
             'AccruedLiabilitiesCurrent': '应计负债',
             'CommercialPaper': '商业票据',
             'CurrentDebtAndCapitalLeaseObligation': '流动债务及融资租赁',
+            'LongTermDebtCurrent': '一年内到期的长期债务',
             'LiabilitiesNoncurrent': '非流动负债',
             'LongTermDebtNoncurrent': '长期债务',
             'OtherLiabilitiesNoncurrent': '其他非流动负债',
