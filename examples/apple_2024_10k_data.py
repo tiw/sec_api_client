@@ -560,26 +560,36 @@ def get_apple_10k_2024_data():
         # (2) Return on Total Capital (ROTC, 总资本回报率)
         if ('NetIncomeLoss' in apple_10k_data and 
             'LongTermDebtNoncurrent' in apple_10k_data and 
-            'Liabilities' in apple_10k_data and 
-            'StockholdersEquity' in apple_10k_data):
-            estimated_interest_expense = apple_10k_data['LongTermDebtNoncurrent']['value'] * 0.04  # 假设利率4%
+            'StockholdersEquity' in apple_10k_data and
+            'IncomeTaxExpenseBenefit' in apple_10k_data and
+            'IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest' in apple_10k_data):
+            
+            # 计算实际税率
+            effective_tax_rate = apple_10k_data['IncomeTaxExpenseBenefit']['value'] / apple_10k_data['IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest']['value']
+            
+            # 计算EstimatedInterestExpense = LongTermDebtNoncurrent * 4% * (1-Effective Tax Rate)
+            estimated_interest_expense = apple_10k_data['LongTermDebtNoncurrent']['value'] * 0.04 * (1 - effective_tax_rate)
+            
             rotc_numerator = apple_10k_data['NetIncomeLoss']['value'] + estimated_interest_expense
-            rotc_denominator = apple_10k_data['Liabilities']['value'] + apple_10k_data['StockholdersEquity']['value']
+            rotc_denominator = apple_10k_data['LongTermDebtNoncurrent']['value'] + apple_10k_data['StockholdersEquity']['value']
             rotc = rotc_numerator / rotc_denominator
+            
             print(f"(2) Return on Total Capital (ROTC, 总资本回报率)")
-            print(f"• Formula: (NetIncomeLoss + EstimatedInterestExpense) / (Liabilities + StockholdersEquity)")
-            print(f"  (假设利息费用为长期债务的4%: LongTermDebtNoncurrent × 4% = {apple_10k_data['LongTermDebtNoncurrent']['value']} × 0.04 ≈ {analyzer.format_financial_number(estimated_interest_expense)} USD)")
-            print(f"• Calculation: ({apple_10k_data['NetIncomeLoss']['value']} + {analyzer.format_financial_number(estimated_interest_expense)}) / ({apple_10k_data['Liabilities']['value']} + {apple_10k_data['StockholdersEquity']['value']}) ≈ {rotc:.1%}")
+            print(f"• Formula: (NetIncomeLoss + EstimatedInterestExpense) / (LongTermDebtNoncurrent + StockholdersEquity)")
+            print(f"  Effective Tax Rate = {effective_tax_rate:.1%}")
+            print(f"  EstimatedInterestExpense = LongTermDebtNoncurrent × 4% × (1-税率)")
+            print(f"  = {apple_10k_data['LongTermDebtNoncurrent']['value']} × 0.04 × (1-{effective_tax_rate:.1%}) = {analyzer.format_financial_number(estimated_interest_expense)} USD")
+            print(f"• Calculation: ({apple_10k_data['NetIncomeLoss']['value']} + {analyzer.format_financial_number(estimated_interest_expense)}) / ({apple_10k_data['LongTermDebtNoncurrent']['value']} + {apple_10k_data['StockholdersEquity']['value']}) ≈ {rotc:.1%}")
             print()
             
             # 添加到计算指标列表
             calculated_metrics.append({
                 'metric_name': 'Return on Total Capital (ROTC, 总资本回报率)',
-                'formula': '(NetIncomeLoss + EstimatedInterestExpense) / (Liabilities + StockholdersEquity)',
+                'formula': '(NetIncomeLoss + EstimatedInterestExpense) / (LongTermDebtNoncurrent + StockholdersEquity)',
                 'value': rotc,
                 'formatted_value': f"{rotc:.1%}",
-                'components': 'NetIncomeLoss, LongTermDebtNoncurrent, Liabilities, StockholdersEquity',
-                'note': 'EstimatedInterestExpense = LongTermDebtNoncurrent × 4%'
+                'components': 'NetIncomeLoss, LongTermDebtNoncurrent, StockholdersEquity, IncomeTaxExpenseBenefit, IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest',
+                'note': f'EstimatedInterestExpense = LongTermDebtNoncurrent × 4% × (1-{effective_tax_rate:.1%})'
             })
         
         # (3) Retained Earnings Ratio (留存收益比率)
@@ -681,7 +691,7 @@ def get_apple_10k_2024_data():
         if 'RetainedEarningsAccumulatedDeficit' in apple_10k_data:
             print(f"   留存收益为负（RetainedEarningsAccumulatedDeficit = {apple_10k_data['RetainedEarningsAccumulatedDeficit']['formatted_value']} USD），可能因历史亏损或大额分红/回购。")
         print(f"3. Interest Expense Assumption:")
-        print(f"   ROTC 中的利息费用为估算值（假设长期债务利率4%），实际值需参考财报附注。")
+        print(f"   ROTC 中的利息费用采用更新公式：EstimatedInterestExpense = LongTermDebtNoncurrent × 4% × (1-实际税率)，分母使用 (LongTermDebtNoncurrent + StockholdersEquity)。")
         print()
         print(f"如需进一步分析（如杜邦分解、行业对比），可补充股价或历史数据。")
         print()
