@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APPLE INC. - Value Line 投资分析报告</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="vl-container">
+        <!-- 顶部标题栏 -->
+        <div class="header-bar">
+            <div class="company-title">
+                <span class="company-name">APPLE INC.</span>
+                <span class="ticker">NDQ-AAPL</span>
+            </div>
+            <div class="key-stats">
+                <div class="stat-group">
+                    <span class="stat-label">RECENT</span>
+                    <span class="stat-value large">227.48</span>
+                </div>
+                <div class="stat-group">
+                    <span class="stat-label">P/E</span>
+                    <span class="stat-value">31.2</span>
+                </div>
+                <div class="stat-group">
+                    <span class="stat-label">RELATIVE P/E RATIO</span>
+                    <span class="stat-value">1.78</span>
+                </div>
+                <div class="stat-group">
+                    <span class="stat-label">DIV'D YLD</span>
+                    <span class="stat-value">0.4%</span>
+                </div>
+                <div class="value-line-logo">
+                    <span>VALUE LINE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评级和目标价格区域 -->
+        <div class="ratings-targets">
+            <div class="ratings-column">
+                <div class="rating-item">
+                    <span class="rating-label">TIMELINESS</span>
+                    <span class="rating-number">2</span>
+                    <span class="rating-note">Raised 2/28/25</span>
+                </div>
+                <div class="rating-item">
+                    <span class="rating-label">SAFETY</span>
+                    <span class="rating-number">1</span>
+                    <span class="rating-note">Raised 4/17/20</span>
+                </div>
+                <div class="rating-item">
+                    <span class="rating-label">TECHNICAL</span>
+                    <span class="rating-number">3</span>
+                    <span class="rating-note">Lowered 2/28/25</span>
+                </div>
+                <div class="rating-item">
+                    <span class="rating-label">BETA</span>
+                    <span class="rating-number">.90</span>
+                    <span class="rating-note">(1.00 = Market)</span>
+                </div>
+            </div>
+            
+            <div class="target-price-section">
+                <div class="target-header">18-Month Target Price Range</div>
+                <div class="target-values">
+                    <div class="target-row">
+                        <span class="target-label">Low-High</span>
+                        <span class="target-value">$195-$375</span>
+                    </div>
+                    <div class="target-row">
+                        <span class="target-label">Midpoint (% to Mid)</span>
+                        <span class="target-value">$285 (25%)</span>
+                    </div>
+                </div>
+                
+                <div class="projections-section">
+                    <div class="proj-header">2028-30 PROJECTIONS</div>
+                    <table class="proj-table">
+                        <tr>
+                            <th></th>
+                            <th>Price</th>
+                            <th>Ann'l Total Return</th>
+                        </tr>
+                        <tr>
+                            <td>High</td>
+                            <td>390</td>
+                            <td>(+70%) 15%</td>
+                        </tr>
+                        <tr>
+                            <td>Low</td>
+                            <td>320</td>
+                            <td>(+40%) 10%</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="main-grid">
+            <!-- 左侧：图表区域 -->
+            <div class="chart-area">
+                <div class="price-range-header">
+                    <div class="range-line">
+                        <span class="range-label">High:</span>
+                        <span class="range-data">29.9 33.6 29.7 44.3 58.4 73.5 138.8 182.1 182.9 199.6 260.1 250.0</span>
+                    </div>
+                    <div class="range-line">
+                        <span class="range-label">Low:</span>
+                        <span class="range-data">17.6 23.0 22.4 28.7 36.6 35.5 53.2 116.2 125.9 124.2 164.1 219.4</span>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="stockChart"></canvas>
+                </div>
+                
+                <div class="volume-container">
+                    <canvas id="volumeChart"></canvas>
+                </div>
+                
+                <div class="chart-years">
+                    <span>2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021 2022 2023 2024 2025 2026</span>
+                </div>
+            </div>
+
+            <!-- 右侧：财务数据表格 -->
+            <div class="financial-data">
+                <div class="returns-section">
+                    <div class="returns-header">% TOT. RETURN 2/25</div>
+                    <table class="returns-table">
+                        <tr>
+                            <th></th>
+                            <th>THIS STOCK</th>
+                            <th>VL ARITH.*</th>
+                        </tr>
+                        <tr>
+                            <td>1 yr.</td>
+                            <td>35.4</td>
+                            <td>12.1</td>
+                        </tr>
+                        <tr>
+                            <td>3 yr.</td>
+                            <td>49.9</td>
+                            <td>20.8</td>
+                        </tr>
+                        <tr>
+                            <td>5 yr.</td>
+                            <td>267.1</td>
+                            <td>96.2</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- 历史财务数据表格 -->
+                <div class="historical-table">
+                    <table class="financial-table">
+                        <thead>
+                            <tr class="year-header">
+                                <th></th>
+                                <th>2020</th>
+                                <th>2021</th>
+                                <th>2022</th>
+                                <th>2023</th>
+                                <th>2024</th>
+                                <th>2025</th>
+                                <th>2026</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="metric-label">Sales per sh</td>
+                                <td>16.17</td>
+                                <td>21.55</td>
+                                <td>24.73</td>
+                                <td>24.65</td>
+                                <td id="sales-per-sh">25.87</td>
+                                <td>27.75</td>
+                                <td>32.00</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">"Cash Flow" per sh</td>
+                                <td>4.03</td>
+                                <td>6.24</td>
+                                <td>6.96</td>
+                                <td>6.98</td>
+                                <td id="cash-flow-per-sh">6.96</td>
+                                <td>8.25</td>
+                                <td>9.40</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Earnings per sh</td>
+                                <td>3.28</td>
+                                <td>5.61</td>
+                                <td>6.11</td>
+                                <td>6.13</td>
+                                <td id="earnings-per-sh">6.08</td>
+                                <td>7.30</td>
+                                <td>8.20</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Div'ds Decl'd per sh</td>
+                                <td>0.75</td>
+                                <td>0.85</td>
+                                <td>0.91</td>
+                                <td>0.94</td>
+                                <td id="dividends-per-sh">0.99</td>
+                                <td>1.10</td>
+                                <td>1.20</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Cap'l Spending per sh</td>
+                                <td>0.43</td>
+                                <td>0.65</td>
+                                <td>0.67</td>
+                                <td>0.70</td>
+                                <td id="capex-per-sh">0.62</td>
+                                <td>0.80</td>
+                                <td>0.85</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Book Value per sh</td>
+                                <td>3.85</td>
+                                <td>3.72</td>
+                                <td>3.18</td>
+                                <td>4.00</td>
+                                <td id="book-value-per-sh">3.77</td>
+                                <td>4.55</td>
+                                <td>5.00</td>
+                            </tr>
+                            <tr>
+                                <td class="metric-label">Common Shs Outst'g</td>
+                                <td>16977</td>
+                                <td>16977</td>
+                                <td>15943</td>
+                                <td>15550</td>
+                                <td id="shares-outstanding">15117</td>
+                                <td>14750</td>
+                                <td>13750</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 估值指标 -->
+                <div class="valuation-metrics">
+                    <table class="metrics-table">
+                        <tr>
+                            <td class="metric-label">Avg Ann'l P/E Ratio</td>
+                            <td id="avg-pe-ratio">31.0</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Relative P/E Ratio</td>
+                            <td id="relative-pe-ratio">1.78</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Avg Ann'l Div'd Yield</td>
+                            <td id="avg-dividend-yield">0.4%</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- 财务指标 -->
+                <div class="financial-metrics">
+                    <table class="metrics-table">
+                        <tr>
+                            <td class="metric-label">Sales ($mill)</td>
+                            <td id="total-sales">391035</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Operating Margin</td>
+                            <td id="operating-margin">31.5%</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Depreciation ($mill)</td>
+                            <td id="depreciation">11445</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Net Profit ($mill)</td>
+                            <td id="net-profit">93736</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Income Tax Rate</td>
+                            <td id="tax-rate">24.1%</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Net Profit Margin</td>
+                            <td id="net-profit-margin">24.0%</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Working Cap'l ($mill)</td>
+                            <td id="working-capital">-23405</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Long-Term Debt ($mill)</td>
+                            <td id="long-term-debt">85750</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Shr. Equity ($mill)</td>
+                            <td id="shareholders-equity">56950</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Return on Total Cap'l</td>
+                            <td id="return-on-capital">67.0%</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Return on Shr. Equity</td>
+                            <td id="return-on-equity">164.6%</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">Retained to Com Eq</td>
+                            <td id="retained-earnings">83.7%</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-label">All Div'ds to Net Prof</td>
+                            <td id="dividend-payout">16.3%</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部资本结构和业务描述 -->
+        <div class="bottom-section">
+            <div class="capital-structure">
+                <h4>CAPITAL STRUCTURE as of 12/28/24</h4>
+                <div class="capital-data">
+                    <div class="capital-item">
+                        <span>Total Debt $96.7 bill.</span>
+                        <span>Due in 5 Yrs $46.0 bill.</span>
+                    </div>
+                    <div class="capital-item">
+                        <span>LT Debt $85.8 bill.</span>
+                        <span>LT Interest $2.6 bill.</span>
+                    </div>
+                    <div class="capital-item">
+                        <span>Common Stock 15.12 mill. shs.</span>
+                        <span>MARKET CAP: $3.4 trillion (Large Cap)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="business-description">
+                <h4>BUSINESS:</h4>
+                <p>Apple Inc., established in 1977, is one of the world's largest makers of PCs and peripheral and consumer products, such as the iPhone smartphone, the Apple Watch, the iPad tablet, and its Mac line of personal computers, for sale primarily to the business, creative, education, government, and consumer markets. It also sells operating systems, services like iCloud storage and Apple Pay, and a host of digital content from the popular iTunes store and other portals. Research and development: 8.0% of '24 sales. Has approximately 164,000 employees. Off./dir. own less than 1.0% of common stock; Vanguard, 8.8%; BlackRock, 6.9% (1/25 Proxy). CEO: Tim Cook. Inc.: CA. Addr.: One Apple Park Way, Cupertino, CA 95014. Tel.: 408-996-1010. Internet: www.apple.com.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
