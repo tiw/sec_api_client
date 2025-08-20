@@ -662,20 +662,45 @@ def get_apple_10k_2024_data():
             })
         
         # (3) Retained Earnings Ratio (留存收益比率)
-        if 'RetainedEarningsAccumulatedDeficit' in apple_10k_data and 'StockholdersEquity' in apple_10k_data:
-            retained_earnings_ratio = apple_10k_data['RetainedEarningsAccumulatedDeficit']['value'] / apple_10k_data['StockholdersEquity']['value']
+        retained_earnings_ratio = None
+        # 修改公式：Retained Earnings Ratio = (Net Income - Dividends) / Stockholders Equity
+        if ('NetIncomeLoss' in apple_10k_data and 
+            'PaymentsOfDividends' in apple_10k_data and 
+            'StockholdersEquity' in apple_10k_data):
+            
+            net_income = apple_10k_data['NetIncomeLoss']['value']
+            dividends = apple_10k_data['PaymentsOfDividends']['value']
+            stockholders_equity = apple_10k_data['StockholdersEquity']['value']
+            
+            retained_earnings_numerator = net_income - dividends
+            retained_earnings_ratio = retained_earnings_numerator / stockholders_equity
+            
             print(f"(3) Retained Earnings Ratio (留存收益比率)")
-            print(f"• Formula: RetainedEarningsAccumulatedDeficit / StockholdersEquity")
-            print(f"• Calculation: {apple_10k_data['RetainedEarningsAccumulatedDeficit']['value']} / {apple_10k_data['StockholdersEquity']['value']} = {retained_earnings_ratio:.1%}")
+            print(f"• Formula: (Net Income - Dividends) / StockholdersEquity")
+            print(f"• Calculation: ({net_income} - {dividends}) / {stockholders_equity} = {retained_earnings_ratio:.1%}")
             print()
             
             # 添加到计算指标列表
             calculated_metrics.append({
                 'metric_name': 'Retained Earnings Ratio (留存收益比率)',
-                'formula': 'RetainedEarningsAccumulatedDeficit / StockholdersEquity',
+                'formula': '(NetIncomeLoss - PaymentsOfDividends) / StockholdersEquity',
                 'value': retained_earnings_ratio,
                 'formatted_value': f"{retained_earnings_ratio:.1%}",
-                'components': 'RetainedEarningsAccumulatedDeficit, StockholdersEquity'
+                'components': 'NetIncomeLoss, PaymentsOfDividends, StockholdersEquity'
+            })
+        else:
+            print(f"(3) Retained Earnings Ratio (留存收益比率)")
+            print(f"• Formula: (Net Income - Dividends) / StockholdersEquity")
+            print(f"• Calculation: 无法计算，缺少必要数据")
+            print()
+            
+            # 添加到计算指标列表（标记为无法计算）
+            calculated_metrics.append({
+                'metric_name': 'Retained Earnings Ratio (留存收益比率)',
+                'formula': '(NetIncomeLoss - PaymentsOfDividends) / StockholdersEquity',
+                'value': None,
+                'formatted_value': "N/A",
+                'components': 'NetIncomeLoss, PaymentsOfDividends, StockholdersEquity'
             })
         
         # 6. Per-Share Metrics (每股指标)
