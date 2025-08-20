@@ -650,6 +650,23 @@ def get_apple_10k_2024_data():
                 'components': 'RevenueFromContractWithCustomerExcludingAssessedTax, WeightedAverageNumberOfDilutedSharesOutstanding'
             })
         
+        # 添加新的Sales per Share计算方法（使用CommonStockSharesIssued）
+        if 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
+            sales_per_share_v2 = apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value'] / apple_10k_data['CommonStockSharesIssued']['value']
+            print(f"Sales per sh (使用发行股数计算)")
+            print(f"• Formula: RevenueFromContractWithCustomerExcludingAssessedTax / CommonStockSharesIssued")
+            print(f"• Calculation: {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} = {sales_per_share_v2:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Sales per sh (使用发行股数计算)',
+                'formula': 'RevenueFromContractWithCustomerExcludingAssessedTax / CommonStockSharesIssued',
+                'value': sales_per_share_v2,
+                'formatted_value': f"{sales_per_share_v2:.2f}",
+                'components': 'RevenueFromContractWithCustomerExcludingAssessedTax, CommonStockSharesIssued'
+            })
+        
         # (2) Cash Flow per Share (每股现金流)
         if 'NetCashProvidedByUsedInOperatingActivities' in apple_10k_data and 'WeightedAverageNumberOfDilutedSharesOutstanding' in apple_10k_data:
             cash_flow_per_share = apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value'] / apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']
@@ -665,6 +682,23 @@ def get_apple_10k_2024_data():
                 'value': cash_flow_per_share,
                 'formatted_value': f"{cash_flow_per_share:.2f}",
                 'components': 'NetCashProvidedByUsedInOperatingActivities, WeightedAverageNumberOfDilutedSharesOutstanding'
+            })
+        
+        # 添加新的Cash Flow per Share计算方法
+        if 'DepreciationDepletionAndAmortization' in apple_10k_data and 'NetIncomeLoss' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
+            cash_flow_per_share_v2 = (apple_10k_data['DepreciationDepletionAndAmortization']['value'] + apple_10k_data['NetIncomeLoss']['value']) / apple_10k_data['CommonStockSharesIssued']['value'] / 1000
+            print(f"\"Cash Flow\" per sh (使用净利润+折旧摊销计算)")
+            print(f"• Formula: (DepreciationDepletionAndAmortization + NetIncomeLoss) / CommonStockSharesIssued / 1000")
+            print(f"• Calculation: ({apple_10k_data['DepreciationDepletionAndAmortization']['value']} + {apple_10k_data['NetIncomeLoss']['value']}) / {apple_10k_data['CommonStockSharesIssued']['value']} / 1000 = {cash_flow_per_share_v2:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': '"Cash Flow" per sh (使用净利润+折旧摊销计算)',
+                'formula': '(DepreciationDepletionAndAmortization + NetIncomeLoss) / CommonStockSharesIssued / 1000',
+                'value': cash_flow_per_share_v2,
+                'formatted_value': f"{cash_flow_per_share_v2:.2f}",
+                'components': 'DepreciationDepletionAndAmortization, NetIncomeLoss, CommonStockSharesIssued'
             })
         
         # (3) Book Value per Share (每股账面价值)
@@ -684,6 +718,23 @@ def get_apple_10k_2024_data():
                 'components': 'StockholdersEquity, WeightedAverageNumberOfDilutedSharesOutstanding'
             })
         
+        # 添加新的Book Value per Share计算方法
+        if 'PaymentsOfDividends' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
+            book_value_per_share_v2 = apple_10k_data['PaymentsOfDividends']['value'] / apple_10k_data['CommonStockSharesIssued']['value'] / 1000
+            print(f"Book Value per sh (使用股息计算)")
+            print(f"• Formula: PaymentsOfDividends / CommonStockSharesIssued / 1000")
+            print(f"• Calculation: {apple_10k_data['PaymentsOfDividends']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} / 1000 = {book_value_per_share_v2:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Book Value per sh (使用股息计算)',
+                'formula': 'PaymentsOfDividends / CommonStockSharesIssued / 1000',
+                'value': book_value_per_share_v2,
+                'formatted_value': f"{book_value_per_share_v2:.2f}",
+                'components': 'PaymentsOfDividends, CommonStockSharesIssued'
+            })
+        
         # (4) Capital Spending per Share (每股资本支出)
         if 'PaymentsToAcquirePropertyPlantAndEquipment' in apple_10k_data and 'WeightedAverageNumberOfDilutedSharesOutstanding' in apple_10k_data:
             capital_spending_per_share = apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value'] / apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']
@@ -699,6 +750,23 @@ def get_apple_10k_2024_data():
                 'value': capital_spending_per_share,
                 'formatted_value': f"{capital_spending_per_share:.2f}",
                 'components': 'PaymentsToAcquirePropertyPlantAndEquipment, WeightedAverageNumberOfDilutedSharesOutstanding'
+            })
+        
+        # 添加新的Capital Spending per Share计算方法
+        if 'PaymentsToAcquirePropertyPlantAndEquipment' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
+            capital_spending_per_share_v2 = apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value'] / apple_10k_data['CommonStockSharesIssued']['value'] / 1000
+            print(f"Cap'l Spending per sh (使用发行股数计算)")
+            print(f"• Formula: PaymentsToAcquirePropertyPlantAndEquipment / CommonStockSharesIssued / 1000")
+            print(f"• Calculation: {apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} / 1000 = {capital_spending_per_share_v2:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': "Cap'l Spending per sh (使用发行股数计算)",
+                'formula': 'PaymentsToAcquirePropertyPlantAndEquipment / CommonStockSharesIssued / 1000',
+                'value': capital_spending_per_share_v2,
+                'formatted_value': f"{capital_spending_per_share_v2:.2f}",
+                'components': 'PaymentsToAcquirePropertyPlantAndEquipment, CommonStockSharesIssued'
             })
         
         # Key Notes (注意事项)
