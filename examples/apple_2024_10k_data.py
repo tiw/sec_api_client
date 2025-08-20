@@ -652,16 +652,16 @@ def get_apple_10k_2024_data():
         
         # 添加新的Sales per Share计算方法（使用CommonStockSharesIssued）
         if 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
-            sales_per_share_v2 = apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value'] / apple_10k_data['CommonStockSharesIssued']['value']
+            sales_per_share_v2 = apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value'] / apple_10k_data['CommonStockSharesIssued']['value'] / 1000
             print(f"Sales per sh (使用发行股数计算)")
-            print(f"• Formula: RevenueFromContractWithCustomerExcludingAssessedTax / CommonStockSharesIssued")
-            print(f"• Calculation: {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} = {sales_per_share_v2:.2f} USD")
+            print(f"• Formula: RevenueFromContractWithCustomerExcludingAssessedTax / CommonStockSharesIssued / 1000")
+            print(f"• Calculation: {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} / 1000 = {sales_per_share_v2:.2f} USD")
             print()
             
             # 添加到计算指标列表
             calculated_metrics.append({
                 'metric_name': 'Sales per sh (使用发行股数计算)',
-                'formula': 'RevenueFromContractWithCustomerExcludingAssessedTax / CommonStockSharesIssued',
+                'formula': 'RevenueFromContractWithCustomerExcludingAssessedTax / CommonStockSharesIssued / 1000',
                 'value': sales_per_share_v2,
                 'formatted_value': f"{sales_per_share_v2:.2f}",
                 'components': 'RevenueFromContractWithCustomerExcludingAssessedTax, CommonStockSharesIssued'
