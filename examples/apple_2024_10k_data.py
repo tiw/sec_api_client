@@ -502,10 +502,29 @@ def get_apple_10k_2024_data():
                 'components': 'NetCashProvidedByUsedInOperatingActivities, PaymentsToAcquirePropertyPlantAndEquipment'
             })
         
-        # (2) Dividend Payout Ratio (股息支付率)
+        # (2) Value Line Free Cash Flow (Value Line自由现金流)
+        if 'NetCashProvidedByUsedInOperatingActivities' in apple_10k_data and 'PaymentsToAcquirePropertyPlantAndEquipment' in apple_10k_data:
+            value_line_fcf = apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value'] + apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value']
+            print(f"(2) Value Line Free Cash Flow (Value Line自由现金流)")
+            print(f"• Formula: NetCashProvidedByUsedInOperatingActivities + PaymentsToAcquirePropertyPlantAndEquipment")
+            print(f"• Calculation: {apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value']} + {apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value']} = {analyzer.format_financial_number(value_line_fcf)} USD")
+            print(f"• Note: Value Line定义的自由现金流将资本支出作为正现金流处理")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Value Line Free Cash Flow (Value Line自由现金流)',
+                'formula': 'NetCashProvidedByUsedInOperatingActivities + PaymentsToAcquirePropertyPlantAndEquipment',
+                'value': value_line_fcf,
+                'formatted_value': analyzer.format_financial_number(value_line_fcf),
+                'components': 'NetCashProvidedByUsedInOperatingActivities, PaymentsToAcquirePropertyPlantAndEquipment',
+                'note': 'Value Line定义的自由现金流将资本支出作为正现金流处理'
+            })
+        
+        # (3) Dividend Payout Ratio (股息支付率)
         if 'PaymentsOfDividends' in apple_10k_data and 'NetIncomeLoss' in apple_10k_data:
             dividend_payout_ratio = apple_10k_data['PaymentsOfDividends']['value'] / apple_10k_data['NetIncomeLoss']['value']
-            print(f"(2) Dividend Payout Ratio (股息支付率)")
+            print(f"(3) Dividend Payout Ratio (股息支付率)")
             print(f"• Formula: PaymentsOfDividends / NetIncomeLoss")
             print(f"• Calculation: {apple_10k_data['PaymentsOfDividends']['value']} / {apple_10k_data['NetIncomeLoss']['value']} = {dividend_payout_ratio:.1%}")
             print()
@@ -519,10 +538,10 @@ def get_apple_10k_2024_data():
                 'components': 'PaymentsOfDividends, NetIncomeLoss'
             })
         
-        # (3) Share Buyback Ratio (股票回购比例)
+        # (4) Share Buyback Ratio (股票回购比例)
         if 'PaymentsForRepurchaseOfCommonStock' in apple_10k_data and 'NetIncomeLoss' in apple_10k_data:
             share_buyback_ratio = apple_10k_data['PaymentsForRepurchaseOfCommonStock']['value'] / apple_10k_data['NetIncomeLoss']['value']
-            print(f"(3) Share Buyback Ratio (股票回购比例)")
+            print(f"(4) Share Buyback Ratio (股票回购比例)")
             print(f"• Formula: PaymentsForRepurchaseOfCommonStock / NetIncomeLoss")
             print(f"• Calculation: {apple_10k_data['PaymentsForRepurchaseOfCommonStock']['value']} / {apple_10k_data['NetIncomeLoss']['value']} = {share_buyback_ratio:.1%}")
             print()
