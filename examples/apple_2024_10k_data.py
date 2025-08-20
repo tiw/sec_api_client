@@ -295,6 +295,397 @@ def get_apple_10k_2024_data():
         except Exception as e:
             print(f"  ⚠️ 计算财务比率时出错: {e}")
         
+        # 添加更详细的财务指标计算
+        print(f"\n📊 详细财务指标分析:")
+        print("=" * 70)
+        
+        # 创建一个列表来存储计算的指标
+        calculated_metrics = []
+        
+        # 1. Profitability Ratios (盈利能力指标)
+        print(f"\n1. Profitability Ratios (盈利能力指标)")
+        print("-" * 50)
+        
+        # (1) Gross Margin (毛利率)
+        if 'GrossProfit' in apple_10k_data and 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data:
+            gross_margin = apple_10k_data['GrossProfit']['value'] / apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']
+            print(f"(1) Gross Margin (毛利率)")
+            print(f"• Formula: GrossProfit / RevenueFromContractWithCustomerExcludingAssessedTax")
+            print(f"• Calculation: {apple_10k_data['GrossProfit']['value']} / {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} = {gross_margin:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Gross Margin (毛利率)',
+                'formula': 'GrossProfit / RevenueFromContractWithCustomerExcludingAssessedTax',
+                'value': gross_margin,
+                'formatted_value': f"{gross_margin:.1%}",
+                'components': 'GrossProfit, RevenueFromContractWithCustomerExcludingAssessedTax'
+            })
+        
+        # (2) Operating Margin (营业利润率)
+        if 'OperatingIncomeLoss' in apple_10k_data and 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data:
+            operating_margin = apple_10k_data['OperatingIncomeLoss']['value'] / apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']
+            print(f"(2) Operating Margin (营业利润率)")
+            print(f"• Formula: OperatingIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax")
+            print(f"• Calculation: {apple_10k_data['OperatingIncomeLoss']['value']} / {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} = {operating_margin:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Operating Margin (营业利润率)',
+                'formula': 'OperatingIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax',
+                'value': operating_margin,
+                'formatted_value': f"{operating_margin:.1%}",
+                'components': 'OperatingIncomeLoss, RevenueFromContractWithCustomerExcludingAssessedTax'
+            })
+        
+        # (3) Net Profit Margin (净利润率)
+        if 'NetIncomeLoss' in apple_10k_data and 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data:
+            net_profit_margin = apple_10k_data['NetIncomeLoss']['value'] / apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']
+            print(f"(3) Net Profit Margin (净利润率)")
+            print(f"• Formula: NetIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax")
+            print(f"• Calculation: {apple_10k_data['NetIncomeLoss']['value']} / {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} = {net_profit_margin:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Net Profit Margin (净利润率)',
+                'formula': 'NetIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax',
+                'value': net_profit_margin,
+                'formatted_value': f"{net_profit_margin:.1%}",
+                'components': 'NetIncomeLoss, RevenueFromContractWithCustomerExcludingAssessedTax'
+            })
+        
+        # (4) Effective Tax Rate (实际税率)
+        if 'IncomeTaxExpenseBenefit' in apple_10k_data and 'IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest' in apple_10k_data:
+            effective_tax_rate = apple_10k_data['IncomeTaxExpenseBenefit']['value'] / apple_10k_data['IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest']['value']
+            print(f"(4) Effective Tax Rate (实际税率)")
+            print(f"• Formula: IncomeTaxExpenseBenefit / IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest")
+            print(f"• Calculation: {apple_10k_data['IncomeTaxExpenseBenefit']['value']} / {apple_10k_data['IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest']['value']} = {effective_tax_rate:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Effective Tax Rate (实际税率)',
+                'formula': 'IncomeTaxExpenseBenefit / IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest',
+                'value': effective_tax_rate,
+                'formatted_value': f"{effective_tax_rate:.1%}",
+                'components': 'IncomeTaxExpenseBenefit, IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest'
+            })
+        
+        # (5) Earnings Per Share (每股收益)
+        if 'EarningsPerShareBasic' in apple_10k_data:
+            print(f"(5) Earnings Per Share (每股收益)")
+            print(f"• Basic EPS (基本每股收益): {apple_10k_data['EarningsPerShareBasic']['formatted_value']}")
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Basic EPS (基本每股收益)',
+                'formula': 'EarningsPerShareBasic',
+                'value': apple_10k_data['EarningsPerShareBasic']['value'],
+                'formatted_value': apple_10k_data['EarningsPerShareBasic']['formatted_value'],
+                'components': 'EarningsPerShareBasic'
+            })
+        if 'EarningsPerShareDiluted' in apple_10k_data:
+            print(f"• Diluted EPS (稀释每股收益): {apple_10k_data['EarningsPerShareDiluted']['formatted_value']}")
+            print()
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Diluted EPS (稀释每股收益)',
+                'formula': 'EarningsPerShareDiluted',
+                'value': apple_10k_data['EarningsPerShareDiluted']['value'],
+                'formatted_value': apple_10k_data['EarningsPerShareDiluted']['formatted_value'],
+                'components': 'EarningsPerShareDiluted'
+            })
+        
+        # 2. Liquidity Ratios (流动性指标)
+        print(f"2. Liquidity Ratios (流动性指标)")
+        print("-" * 50)
+        
+        # (1) Current Ratio (流动比率)
+        if 'AssetsCurrent' in apple_10k_data and 'LiabilitiesCurrent' in apple_10k_data:
+            current_ratio = apple_10k_data['AssetsCurrent']['value'] / apple_10k_data['LiabilitiesCurrent']['value']
+            print(f"(1) Current Ratio (流动比率)")
+            print(f"• Formula: AssetsCurrent / LiabilitiesCurrent")
+            print(f"• Calculation: {apple_10k_data['AssetsCurrent']['value']} / {apple_10k_data['LiabilitiesCurrent']['value']} = {current_ratio:.2f}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Current Ratio (流动比率)',
+                'formula': 'AssetsCurrent / LiabilitiesCurrent',
+                'value': current_ratio,
+                'formatted_value': f"{current_ratio:.2f}",
+                'components': 'AssetsCurrent, LiabilitiesCurrent'
+            })
+        
+        # (2) Quick Ratio (速动比率)
+        if ('CashAndCashEquivalentsAtCarryingValue' in apple_10k_data and 
+            'MarketableSecuritiesCurrent' in apple_10k_data and 
+            'AccountsReceivableNetCurrent' in apple_10k_data and 
+            'LiabilitiesCurrent' in apple_10k_data):
+            quick_assets = (apple_10k_data['CashAndCashEquivalentsAtCarryingValue']['value'] + 
+                           apple_10k_data['MarketableSecuritiesCurrent']['value'] + 
+                           apple_10k_data['AccountsReceivableNetCurrent']['value'])
+            liabilities_current = apple_10k_data['LiabilitiesCurrent']['value']
+            quick_ratio = quick_assets / liabilities_current
+            print(f"(2) Quick Ratio (速动比率)")
+            print(f"• Formula: (CashAndCashEquivalentsAtCarryingValue + MarketableSecuritiesCurrent + AccountsReceivableNetCurrent) / LiabilitiesCurrent")
+            print(f"• Calculation: ({apple_10k_data['CashAndCashEquivalentsAtCarryingValue']['value']} + {apple_10k_data['MarketableSecuritiesCurrent']['value']} + {apple_10k_data['AccountsReceivableNetCurrent']['value']}) / {apple_10k_data['LiabilitiesCurrent']['value']} = {quick_ratio:.2f}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Quick Ratio (速动比率)',
+                'formula': '(CashAndCashEquivalentsAtCarryingValue + MarketableSecuritiesCurrent + AccountsReceivableNetCurrent) / LiabilitiesCurrent',
+                'value': quick_ratio,
+                'formatted_value': f"{quick_ratio:.2f}",
+                'components': 'CashAndCashEquivalentsAtCarryingValue, MarketableSecuritiesCurrent, AccountsReceivableNetCurrent, LiabilitiesCurrent'
+            })
+        
+        # 3. Leverage Ratios (杠杆比率)
+        print(f"3. Leverage Ratios (杠杆比率)")
+        print("-" * 50)
+        
+        # (1) Debt-to-Asset Ratio (资产负债率)
+        if 'Liabilities' in apple_10k_data and 'Assets' in apple_10k_data:
+            debt_to_asset_ratio = apple_10k_data['Liabilities']['value'] / apple_10k_data['Assets']['value']
+            print(f"(1) Debt-to-Asset Ratio (资产负债率)")
+            print(f"• Formula: Liabilities / Assets")
+            print(f"• Calculation: {apple_10k_data['Liabilities']['value']} / {apple_10k_data['Assets']['value']} = {debt_to_asset_ratio:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Debt-to-Asset Ratio (资产负债率)',
+                'formula': 'Liabilities / Assets',
+                'value': debt_to_asset_ratio,
+                'formatted_value': f"{debt_to_asset_ratio:.1%}",
+                'components': 'Liabilities, Assets'
+            })
+        
+        # (2) Equity Ratio (股东权益比率)
+        if 'StockholdersEquity' in apple_10k_data and 'Assets' in apple_10k_data:
+            equity_ratio = apple_10k_data['StockholdersEquity']['value'] / apple_10k_data['Assets']['value']
+            print(f"(2) Equity Ratio (股东权益比率)")
+            print(f"• Formula: StockholdersEquity / Assets")
+            print(f"• Calculation: {apple_10k_data['StockholdersEquity']['value']} / {apple_10k_data['Assets']['value']} = {equity_ratio:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Equity Ratio (股东权益比率)',
+                'formula': 'StockholdersEquity / Assets',
+                'value': equity_ratio,
+                'formatted_value': f"{equity_ratio:.1%}",
+                'components': 'StockholdersEquity, Assets'
+            })
+        
+        # 4. Cash Flow Metrics (现金流指标)
+        print(f"4. Cash Flow Metrics (现金流指标)")
+        print("-" * 50)
+        
+        # (1) Free Cash Flow (自由现金流)
+        if 'NetCashProvidedByUsedInOperatingActivities' in apple_10k_data and 'PaymentsToAcquirePropertyPlantAndEquipment' in apple_10k_data:
+            free_cash_flow = apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value'] - apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value']
+            print(f"(1) Free Cash Flow (自由现金流)")
+            print(f"• Formula: NetCashProvidedByUsedInOperatingActivities - PaymentsToAcquirePropertyPlantAndEquipment")
+            print(f"• Calculation: {apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value']} - {apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value']} = {analyzer.format_financial_number(free_cash_flow)} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Free Cash Flow (自由现金流)',
+                'formula': 'NetCashProvidedByUsedInOperatingActivities - PaymentsToAcquirePropertyPlantAndEquipment',
+                'value': free_cash_flow,
+                'formatted_value': analyzer.format_financial_number(free_cash_flow),
+                'components': 'NetCashProvidedByUsedInOperatingActivities, PaymentsToAcquirePropertyPlantAndEquipment'
+            })
+        
+        # (2) Dividend Payout Ratio (股息支付率)
+        if 'PaymentsOfDividends' in apple_10k_data and 'NetIncomeLoss' in apple_10k_data:
+            dividend_payout_ratio = apple_10k_data['PaymentsOfDividends']['value'] / apple_10k_data['NetIncomeLoss']['value']
+            print(f"(2) Dividend Payout Ratio (股息支付率)")
+            print(f"• Formula: PaymentsOfDividends / NetIncomeLoss")
+            print(f"• Calculation: {apple_10k_data['PaymentsOfDividends']['value']} / {apple_10k_data['NetIncomeLoss']['value']} = {dividend_payout_ratio:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Dividend Payout Ratio (股息支付率)',
+                'formula': 'PaymentsOfDividends / NetIncomeLoss',
+                'value': dividend_payout_ratio,
+                'formatted_value': f"{dividend_payout_ratio:.1%}",
+                'components': 'PaymentsOfDividends, NetIncomeLoss'
+            })
+        
+        # (3) Share Buyback Ratio (股票回购比例)
+        if 'PaymentsForRepurchaseOfCommonStock' in apple_10k_data and 'NetIncomeLoss' in apple_10k_data:
+            share_buyback_ratio = apple_10k_data['PaymentsForRepurchaseOfCommonStock']['value'] / apple_10k_data['NetIncomeLoss']['value']
+            print(f"(3) Share Buyback Ratio (股票回购比例)")
+            print(f"• Formula: PaymentsForRepurchaseOfCommonStock / NetIncomeLoss")
+            print(f"• Calculation: {apple_10k_data['PaymentsForRepurchaseOfCommonStock']['value']} / {apple_10k_data['NetIncomeLoss']['value']} = {share_buyback_ratio:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Share Buyback Ratio (股票回购比例)',
+                'formula': 'PaymentsForRepurchaseOfCommonStock / NetIncomeLoss',
+                'value': share_buyback_ratio,
+                'formatted_value': f"{share_buyback_ratio:.1%}",
+                'components': 'PaymentsForRepurchaseOfCommonStock, NetIncomeLoss'
+            })
+        
+        # 5. Return Metrics (回报率指标)
+        print(f"5. Return Metrics (回报率指标)")
+        print("-" * 50)
+        
+        # (1) Return on Equity (ROE, 净资产收益率)
+        if 'NetIncomeLoss' in apple_10k_data and 'StockholdersEquity' in apple_10k_data:
+            roe = apple_10k_data['NetIncomeLoss']['value'] / apple_10k_data['StockholdersEquity']['value']
+            print(f"(1) Return on Equity (ROE, 净资产收益率)")
+            print(f"• Formula: NetIncomeLoss / StockholdersEquity")
+            print(f"• Calculation: {apple_10k_data['NetIncomeLoss']['value']} / {apple_10k_data['StockholdersEquity']['value']} = {roe:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Return on Equity (ROE, 净资产收益率)',
+                'formula': 'NetIncomeLoss / StockholdersEquity',
+                'value': roe,
+                'formatted_value': f"{roe:.1%}",
+                'components': 'NetIncomeLoss, StockholdersEquity'
+            })
+        
+        # (2) Return on Total Capital (ROTC, 总资本回报率)
+        if ('NetIncomeLoss' in apple_10k_data and 
+            'LongTermDebtNoncurrent' in apple_10k_data and 
+            'Liabilities' in apple_10k_data and 
+            'StockholdersEquity' in apple_10k_data):
+            estimated_interest_expense = apple_10k_data['LongTermDebtNoncurrent']['value'] * 0.04  # 假设利率4%
+            rotc_numerator = apple_10k_data['NetIncomeLoss']['value'] + estimated_interest_expense
+            rotc_denominator = apple_10k_data['Liabilities']['value'] + apple_10k_data['StockholdersEquity']['value']
+            rotc = rotc_numerator / rotc_denominator
+            print(f"(2) Return on Total Capital (ROTC, 总资本回报率)")
+            print(f"• Formula: (NetIncomeLoss + EstimatedInterestExpense) / (Liabilities + StockholdersEquity)")
+            print(f"  (假设利息费用为长期债务的4%: LongTermDebtNoncurrent × 4% = {apple_10k_data['LongTermDebtNoncurrent']['value']} × 0.04 ≈ {analyzer.format_financial_number(estimated_interest_expense)} USD)")
+            print(f"• Calculation: ({apple_10k_data['NetIncomeLoss']['value']} + {analyzer.format_financial_number(estimated_interest_expense)}) / ({apple_10k_data['Liabilities']['value']} + {apple_10k_data['StockholdersEquity']['value']}) ≈ {rotc:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Return on Total Capital (ROTC, 总资本回报率)',
+                'formula': '(NetIncomeLoss + EstimatedInterestExpense) / (Liabilities + StockholdersEquity)',
+                'value': rotc,
+                'formatted_value': f"{rotc:.1%}",
+                'components': 'NetIncomeLoss, LongTermDebtNoncurrent, Liabilities, StockholdersEquity',
+                'note': 'EstimatedInterestExpense = LongTermDebtNoncurrent × 4%'
+            })
+        
+        # (3) Retained Earnings Ratio (留存收益比率)
+        if 'RetainedEarningsAccumulatedDeficit' in apple_10k_data and 'StockholdersEquity' in apple_10k_data:
+            retained_earnings_ratio = apple_10k_data['RetainedEarningsAccumulatedDeficit']['value'] / apple_10k_data['StockholdersEquity']['value']
+            print(f"(3) Retained Earnings Ratio (留存收益比率)")
+            print(f"• Formula: RetainedEarningsAccumulatedDeficit / StockholdersEquity")
+            print(f"• Calculation: {apple_10k_data['RetainedEarningsAccumulatedDeficit']['value']} / {apple_10k_data['StockholdersEquity']['value']} = {retained_earnings_ratio:.1%}")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Retained Earnings Ratio (留存收益比率)',
+                'formula': 'RetainedEarningsAccumulatedDeficit / StockholdersEquity',
+                'value': retained_earnings_ratio,
+                'formatted_value': f"{retained_earnings_ratio:.1%}",
+                'components': 'RetainedEarningsAccumulatedDeficit, StockholdersEquity'
+            })
+        
+        # 6. Per-Share Metrics (每股指标)
+        print(f"6. Per-Share Metrics (每股指标)")
+        print("-" * 50)
+        
+        # (1) Sales per Share (每股销售额)
+        if 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data and 'WeightedAverageNumberOfDilutedSharesOutstanding' in apple_10k_data:
+            sales_per_share = apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value'] / apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']
+            print(f"(1) Sales per Share (每股销售额)")
+            print(f"• Formula: RevenueFromContractWithCustomerExcludingAssessedTax / WeightedAverageNumberOfDilutedSharesOutstanding")
+            print(f"• Calculation: {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} / {apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']} = {sales_per_share:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Sales per Share (每股销售额)',
+                'formula': 'RevenueFromContractWithCustomerExcludingAssessedTax / WeightedAverageNumberOfDilutedSharesOutstanding',
+                'value': sales_per_share,
+                'formatted_value': f"{sales_per_share:.2f}",
+                'components': 'RevenueFromContractWithCustomerExcludingAssessedTax, WeightedAverageNumberOfDilutedSharesOutstanding'
+            })
+        
+        # (2) Cash Flow per Share (每股现金流)
+        if 'NetCashProvidedByUsedInOperatingActivities' in apple_10k_data and 'WeightedAverageNumberOfDilutedSharesOutstanding' in apple_10k_data:
+            cash_flow_per_share = apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value'] / apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']
+            print(f"(2) Cash Flow per Share (每股现金流)")
+            print(f"• Formula: NetCashProvidedByUsedInOperatingActivities / WeightedAverageNumberOfDilutedSharesOutstanding")
+            print(f"• Calculation: {apple_10k_data['NetCashProvidedByUsedInOperatingActivities']['value']} / {apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']} = {cash_flow_per_share:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Cash Flow per Share (每股现金流)',
+                'formula': 'NetCashProvidedByUsedInOperatingActivities / WeightedAverageNumberOfDilutedSharesOutstanding',
+                'value': cash_flow_per_share,
+                'formatted_value': f"{cash_flow_per_share:.2f}",
+                'components': 'NetCashProvidedByUsedInOperatingActivities, WeightedAverageNumberOfDilutedSharesOutstanding'
+            })
+        
+        # (3) Book Value per Share (每股账面价值)
+        if 'StockholdersEquity' in apple_10k_data and 'WeightedAverageNumberOfDilutedSharesOutstanding' in apple_10k_data:
+            book_value_per_share = apple_10k_data['StockholdersEquity']['value'] / apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']
+            print(f"(3) Book Value per Share (每股账面价值)")
+            print(f"• Formula: StockholdersEquity / WeightedAverageNumberOfDilutedSharesOutstanding")
+            print(f"• Calculation: {apple_10k_data['StockholdersEquity']['value']} / {apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']} = {book_value_per_share:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Book Value per Share (每股账面价值)',
+                'formula': 'StockholdersEquity / WeightedAverageNumberOfDilutedSharesOutstanding',
+                'value': book_value_per_share,
+                'formatted_value': f"{book_value_per_share:.2f}",
+                'components': 'StockholdersEquity, WeightedAverageNumberOfDilutedSharesOutstanding'
+            })
+        
+        # (4) Capital Spending per Share (每股资本支出)
+        if 'PaymentsToAcquirePropertyPlantAndEquipment' in apple_10k_data and 'WeightedAverageNumberOfDilutedSharesOutstanding' in apple_10k_data:
+            capital_spending_per_share = apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value'] / apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']
+            print(f"(4) Capital Spending per Share (每股资本支出)")
+            print(f"• Formula: PaymentsToAcquirePropertyPlantAndEquipment / WeightedAverageNumberOfDilutedSharesOutstanding")
+            print(f"• Calculation: {apple_10k_data['PaymentsToAcquirePropertyPlantAndEquipment']['value']} / {apple_10k_data['WeightedAverageNumberOfDilutedSharesOutstanding']['value']} = {capital_spending_per_share:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Capital Spending per Share (每股资本支出)',
+                'formula': 'PaymentsToAcquirePropertyPlantAndEquipment / WeightedAverageNumberOfDilutedSharesOutstanding',
+                'value': capital_spending_per_share,
+                'formatted_value': f"{capital_spending_per_share:.2f}",
+                'components': 'PaymentsToAcquirePropertyPlantAndEquipment, WeightedAverageNumberOfDilutedSharesOutstanding'
+            })
+        
+        # Key Notes (注意事项)
+        print(f"Key Notes (注意事项)")
+        print("-" * 50)
+        print(f"1. Missing Data:")
+        print(f"   • Price-Earnings Ratio (P/E) 和 Dividend Yield 需股价数据支持（表中未提供）。")
+        print()
+        print(f"2. Negative Retained Earnings:")
+        if 'RetainedEarningsAccumulatedDeficit' in apple_10k_data:
+            print(f"   留存收益为负（RetainedEarningsAccumulatedDeficit = {apple_10k_data['RetainedEarningsAccumulatedDeficit']['formatted_value']} USD），可能因历史亏损或大额分红/回购。")
+        print(f"3. Interest Expense Assumption:")
+        print(f"   ROTC 中的利息费用为估算值（假设长期债务利率4%），实际值需参考财报附注。")
+        print()
+        print(f"如需进一步分析（如杜邦分解、行业对比），可补充股价或历史数据。")
+        print()
+        
         # 保存10-K数据到文件
         try:
             print(f"\n💾 保存10-K数据到文件...")
@@ -332,6 +723,13 @@ def get_apple_10k_2024_data():
                     category_file = f"apple_2024_10k_{category}.csv"
                     category_df.to_csv(category_file, index=False, encoding='utf-8')
                     print(f"  ✅ {category.upper()}文件已保存: {category_file}")
+            
+            # 保存计算的财务指标到CSV文件
+            if calculated_metrics:
+                metrics_df = pd.DataFrame(calculated_metrics)
+                metrics_csv_file = "apple_2024_10k_calculated_metrics.csv"
+                metrics_df.to_csv(metrics_csv_file, index=False, encoding='utf-8')
+                print(f"  ✅ 计算财务指标文件已保存: {metrics_csv_file}")
             
         except Exception as e:
             print(f"  ⚠️ 保存文件时出错: {e}")
