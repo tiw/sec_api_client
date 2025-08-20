@@ -103,6 +103,7 @@ def get_apple_10k_2024_data():
             'OtherLiabilitiesNoncurrent': '其他非流动负债',
             'StockholdersEquity': '股东权益',
             'CommonStockValue': '普通股股本',
+            'CommonStockSharesIssued': '发行的普通股股数',
             'RetainedEarningsAccumulatedDeficit': '留存收益',
             'AccumulatedOtherComprehensiveIncomeLossNetOfTax': '其他综合收益累计额'
         },
