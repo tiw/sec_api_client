@@ -333,21 +333,61 @@ def get_apple_10k_2024_data():
                 'components': 'GrossProfit, RevenueFromContractWithCustomerExcludingAssessedTax'
             })
         
+        # 添加EBITDA指标
+        ebitda = None
+        if 'OperatingIncomeLoss' in apple_10k_data and 'DepreciationDepletionAndAmortization' in apple_10k_data:
+            ebitda = apple_10k_data['OperatingIncomeLoss']['value'] + apple_10k_data['DepreciationDepletionAndAmortization']['value']
+            print(f"EBITDA")
+            print(f"• Formula: OperatingIncomeLoss + DepreciationDepletionAndAmortization")
+            print(f"• Calculation: {apple_10k_data['OperatingIncomeLoss']['value']} + {apple_10k_data['DepreciationDepletionAndAmortization']['value']} = {ebitda:.2f} USD")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'EBITDA',
+                'formula': 'OperatingIncomeLoss + DepreciationDepletionAndAmortization',
+                'value': ebitda,
+                'formatted_value': f"{ebitda:.2f}",
+                'components': 'OperatingIncomeLoss, DepreciationDepletionAndAmortization'
+            })
+        else:
+            print(f"EBITDA")
+            print(f"• Formula: OperatingIncomeLoss + DepreciationDepletionAndAmortization")
+            print(f"• Calculation: 无法计算，缺少OperatingIncomeLoss或DepreciationDepletionAndAmortization数据")
+            print()
+            
+            # 添加到计算指标列表（标记为无法计算）
+            calculated_metrics.append({
+                'metric_name': 'EBITDA',
+                'formula': 'OperatingIncomeLoss + DepreciationDepletionAndAmortization',
+                'value': None,
+                'formatted_value': "N/A",
+                'components': 'OperatingIncomeLoss, DepreciationDepletionAndAmortization'
+            })
+        
         # (2) Operating Margin (营业利润率)
+        operating_margin = None
         if 'OperatingIncomeLoss' in apple_10k_data and 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data:
-            operating_margin = apple_10k_data['OperatingIncomeLoss']['value'] / apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']
-            print(f"(2) Operating Margin (营业利润率)")
-            print(f"• Formula: OperatingIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax")
-            print(f"• Calculation: {apple_10k_data['OperatingIncomeLoss']['value']} / {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} = {operating_margin:.1%}")
+            # 修改：使用EBITDA计算营业利润率
+            if ebitda is not None and 'RevenueFromContractWithCustomerExcludingAssessedTax' in apple_10k_data:
+                operating_margin = ebitda / apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']
+                print(f"(2) Operating Margin (营业利润率)")
+                print(f"• Formula: EBITDA / RevenueFromContractWithCustomerExcludingAssessedTax")
+                print(f"• Calculation: {ebitda:.2f} / {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} = {operating_margin:.1%}")
+            else:
+                operating_margin = apple_10k_data['OperatingIncomeLoss']['value'] / apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']
+                print(f"(2) Operating Margin (营业利润率)")
+                print(f"• Formula: OperatingIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax")
+                print(f"• Calculation: {apple_10k_data['OperatingIncomeLoss']['value']} / {apple_10k_data['RevenueFromContractWithCustomerExcludingAssessedTax']['value']} = {operating_margin:.1%}")
             print()
             
             # 添加到计算指标列表
             calculated_metrics.append({
                 'metric_name': 'Operating Margin (营业利润率)',
-                'formula': 'OperatingIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax',
+                'formula': 'EBITDA / RevenueFromContractWithCustomerExcludingAssessedTax' if ebitda is not None else 'OperatingIncomeLoss / RevenueFromContractWithCustomerExcludingAssessedTax',
                 'value': operating_margin,
                 'formatted_value': f"{operating_margin:.1%}",
-                'components': 'OperatingIncomeLoss, RevenueFromContractWithCustomerExcludingAssessedTax'
+                'components': 'OperatingIncomeLoss, DepreciationDepletionAndAmortization, RevenueFromContractWithCustomerExcludingAssessedTax'
             })
         
         # (3) Net Profit Margin (净利润率)
@@ -741,25 +781,25 @@ def get_apple_10k_2024_data():
         
         # 添加新的Book Value per Share计算方法
         book_value_per_share_v2 = None
-        if 'PaymentsOfDividends' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
-            book_value_per_share_v2 = apple_10k_data['PaymentsOfDividends']['value'] / apple_10k_data['CommonStockSharesIssued']['value']
+        if 'StockholdersEquity' in apple_10k_data and 'CommonStockSharesIssued' in apple_10k_data:
+            book_value_per_share_v2 = apple_10k_data['StockholdersEquity']['value'] / apple_10k_data['CommonStockSharesIssued']['value']
             print(f"Book Value per sh (使用股息计算)")
-            print(f"• Formula: PaymentsOfDividends / CommonStockSharesIssued")
-            print(f"• Calculation: {apple_10k_data['PaymentsOfDividends']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} = {book_value_per_share_v2:.2f} USD")
+            print(f"• Formula: StockholdersEquity / CommonStockSharesIssued")
+            print(f"• Calculation: {apple_10k_data['StockholdersEquity']['value']} / {apple_10k_data['CommonStockSharesIssued']['value']} = {book_value_per_share_v2:.2f} USD")
             print()
         else:
             print(f"Book Value per sh (使用股息计算)")
-            print(f"• Formula: PaymentsOfDividends / CommonStockSharesIssued")
-            print(f"• Calculation: 无法计算，缺少CommonStockSharesIssued数据")
+            print(f"• Formula: StockholdersEquity / CommonStockSharesIssued")
+            print(f"• Calculation: 无法计算，缺少StockholdersEquity或CommonStockSharesIssued数据")
             print()
             
         # 添加到计算指标列表（无论是否计算成功）
         calculated_metrics.append({
             'metric_name': 'Book Value per sh (使用股息计算)',
-            'formula': 'PaymentsOfDividends / CommonStockSharesIssued',
+            'formula': 'StockholdersEquity / CommonStockSharesIssued',
             'value': book_value_per_share_v2,
             'formatted_value': f"{book_value_per_share_v2:.2f}" if book_value_per_share_v2 is not None else "N/A",
-            'components': 'PaymentsOfDividends, CommonStockSharesIssued'
+            'components': 'StockholdersEquity, CommonStockSharesIssued'
         })
         
         # (4) Capital Spending per Share (每股资本支出)
