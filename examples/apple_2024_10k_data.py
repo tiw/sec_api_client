@@ -103,7 +103,7 @@ def get_apple_10k_2024_data():
             'OtherLiabilitiesNoncurrent': '其他非流动负债',
             'StockholdersEquity': '股东权益',
             'CommonStockValue': '普通股股本',
-            'CommonStockSharesIssued': '发行的普通股股数',
+q            'CommonStockSharesIssued': '发行的普通股股数',
             'RetainedEarningsAccumulatedDeficit': '留存收益',
             'AccumulatedOtherComprehensiveIncomeLossNetOfTax': '其他综合收益累计额'
         },
@@ -148,7 +148,7 @@ def get_apple_10k_2024_data():
                     unit_key = 'USD'
                     if concept in ['EarningsPerShareBasic', 'EarningsPerShareDiluted']:
                         unit_key = 'USD/shares'
-                    elif concept in ['WeightedAverageNumberOfSharesOutstandingBasic', 'WeightedAverageNumberOfDilutedSharesOutstanding']:
+                    elif concept in ['WeightedAverageNumberOfSharesOutstandingBasic', 'WeightedAverageNumberOfDilutedSharesOutstanding', 'CommonStockSharesIssued']:
                         unit_key = 'shares'
                     
                     unit_data = concept_data['units'].get(unit_key, [])
@@ -157,6 +157,14 @@ def get_apple_10k_2024_data():
                         # 尝试其他可能的单位
                         for possible_unit in concept_data['units'].keys():
                             if 'shares' in possible_unit.lower() or 'per' in possible_unit.lower():
+                                unit_data = concept_data['units'][possible_unit]
+                                unit_key = possible_unit
+                                break
+                    
+                    # 对于股票数量相关概念，也尝试查找shares单位
+                    if not unit_data and concept in ['CommonStockSharesIssued']:
+                        for possible_unit in concept_data['units'].keys():
+                            if 'shares' in possible_unit.lower():
                                 unit_data = concept_data['units'][possible_unit]
                                 unit_key = possible_unit
                                 break
