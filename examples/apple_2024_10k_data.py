@@ -104,6 +104,7 @@ def get_apple_10k_2024_data():
             'StockholdersEquity': '股东权益',
             'CommonStockValue': '普通股股本',
             'CommonStockSharesIssued': '发行的普通股股数',
+            'CommonStockSharesOutstanding': '流通普通股股数',
             'RetainedEarningsAccumulatedDeficit': '留存收益',
             'AccumulatedOtherComprehensiveIncomeLossNetOfTax': '其他综合收益累计额'
         },
@@ -800,6 +801,37 @@ def get_apple_10k_2024_data():
             'formatted_value': f"{capital_spending_per_share_v2:.2f}" if capital_spending_per_share_v2 is not None else "N/A",
             'components': 'PaymentsToAcquirePropertyPlantAndEquipment, CommonStockSharesIssued'
         })
+        
+        # 添加Common Shares Outstanding指标（与CommonStockSharesIssued相同）
+        if 'CommonStockSharesIssued' in apple_10k_data:
+            common_shares_outstanding = apple_10k_data['CommonStockSharesIssued']['value']
+            print(f"Common Shs Outst'g (在外流通的普通股总数)")
+            print(f"• Formula: CommonStockSharesIssued")
+            print(f"• Value: {common_shares_outstanding:,.0f} shares")
+            print()
+            
+            # 添加到计算指标列表
+            calculated_metrics.append({
+                'metric_name': 'Common Shs Outst\'g',
+                'formula': 'CommonStockSharesIssued',
+                'value': common_shares_outstanding,
+                'formatted_value': f"{common_shares_outstanding:,.0f}",
+                'components': 'CommonStockSharesIssued'
+            })
+        else:
+            print(f"Common Shs Outst'g (在外流通的普通股总数)")
+            print(f"• Formula: CommonStockSharesIssued")
+            print(f"• Value: 无法计算，缺少CommonStockSharesIssued数据")
+            print()
+            
+            # 添加到计算指标列表（标记为无法计算）
+            calculated_metrics.append({
+                'metric_name': 'Common Shs Outst\'g',
+                'formula': 'CommonStockSharesIssued',
+                'value': None,
+                'formatted_value': "N/A",
+                'components': 'CommonStockSharesIssued'
+            })
         
         # Key Notes (注意事项)
         print(f"Key Notes (注意事项)")
