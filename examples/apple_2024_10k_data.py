@@ -45,34 +45,26 @@ def get_apple_10k_2024_data():
     
     print(f"\n🔍 正在获取Apple 2024年10-K年度报告数据...")
     
-    # 完整的财务概念列表 - 按10-K报告结构组织
+    # 财务概念定义（按报告部分分类）
     financial_concepts = {
         # 损益表概念
         'income_statement': {
-            'Revenues': '总营收',
             'RevenueFromContractWithCustomerExcludingAssessedTax': '客户合同收入',
-            'SalesRevenueNet': '净销售收入',
-            'CostOfRevenue': '营业成本',
-            'CostOfGoodsAndServicesSold': '成本收入',
-            'CostOfGoodsSold': '商品销售成本',
+            'CostOfGoodsAndServicesSold': '服务和商品成本',
             'GrossProfit': '毛利润',
             'OperatingExpenses': '营业费用',
             'ResearchAndDevelopmentExpense': '研发费用',
-            'SellingGeneralAndAdministrativeExpenses': '销售及管理费用',
-            'SellingAndMarketingExpense': '销售及营销费用',
-            'GeneralAndAdministrativeExpense': '管理费用',
+            'GeneralAndAdministrativeExpense': '一般及行政费用',
             'OperatingIncomeLoss': '营业利润',
-            'NonoperatingIncomeExpense': '非营业收益',
-            'InterestExpense': '利息费用',
-            'InterestIncomeExpenseNet': '净利息收入',
-            'IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest': '税前利润',
+            'NonoperatingIncomeExpense': '非营业收支',
+            'IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest': '税前持续经营利润',
             'IncomeTaxExpenseBenefit': '所得税费用',
             'NetIncomeLoss': '净利润',
-            'NetIncomeAvailableToCommonStockholdersBasic': '归属普通股股东净利润',
             'EarningsPerShareBasic': '基本每股收益',
             'EarningsPerShareDiluted': '稀释每股收益',
-            'WeightedAverageNumberOfSharesOutstandingBasic': '基本加权平均股数',
-            'WeightedAverageNumberOfDilutedSharesOutstanding': '稀释加权平均股数'
+            'WeightedAverageNumberOfSharesOutstandingBasic': '加权平均流通股数（基本）',
+            'WeightedAverageNumberOfDilutedSharesOutstanding': '加权平均流通股数（稀释）',
+            'DepreciationDepletionAndAmortization': '折旧、耗损和摊销'
         },
         
         # 资产负债表概念
@@ -80,7 +72,6 @@ def get_apple_10k_2024_data():
             'Assets': '总资产',
             'AssetsCurrent': '流动资产',
             'CashAndCashEquivalentsAtCarryingValue': '现金及现金等价物',
-            'Cash': '现金资产',
             'MarketableSecuritiesCurrent': '流动有价证券',
             'AccountsReceivableNetCurrent': '应收账款净额',
             'InventoryNet': '存货净额',
@@ -104,7 +95,6 @@ def get_apple_10k_2024_data():
             'StockholdersEquity': '股东权益',
             'CommonStockValue': '普通股股本',
             'CommonStockSharesIssued': '发行的普通股股数',
-            'CommonStockSharesOutstanding': '流通普通股股数',
             'RetainedEarningsAccumulatedDeficit': '留存收益',
             'AccumulatedOtherComprehensiveIncomeLossNetOfTax': '其他综合收益累计额'
         },
@@ -112,12 +102,7 @@ def get_apple_10k_2024_data():
         # 现金流量表概念
         'cash_flow': {
             'NetCashProvidedByUsedInOperatingActivities': '经营活动现金流',
-            'NetCashProvidedByUsedInInvestingActivities': '投资活动现金流',
-            'NetCashProvidedByUsedInFinancingActivities': '融资活动现金流',
-            'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect': '现金及现金等价物净增加',
-            'DepreciationDepletionAndAmortization': '折旧摊销',
-            'ShareBasedCompensation': '股权激励费用',
-            'PaymentsToAcquirePropertyPlantAndEquipment': '购建固定资产支出',
+            'PaymentsToAcquirePropertyPlantAndEquipment': '购买固定资产支出',
             'PaymentsToAcquireMarketableSecurities': '购买有价证券支出',
             'ProceedsFromMaturitiesPrepaymentsAndCallsOfMarketableSecurities': '有价证券到期回收',
             'PaymentsOfDividends': '支付股息',
