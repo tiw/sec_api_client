@@ -11,6 +11,15 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+  		gridTemplateColumns: {
+  			'18': 'repeat(18, minmax(0, 1fr))',
+  		},
+  		spacing: {
+  			'0.25': '0.0625rem',
+  		},
+  		fontSize: {
+  			'10px': '10px',
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
