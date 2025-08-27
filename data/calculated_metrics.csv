@@ -1,0 +1,23 @@
+metric_id,metric_name,chinese_name,metric_type,category,note
+sales_per_share,Sales per Share,每股销售额,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+cash_flow_per_share,Cash Flow per Share,每股现金流,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+cap_spending_per_share,Capital Spending per Share,每股资本支出,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+book_value_per_share,Book Value per Share,每股账面价值,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+operating_margin,Operating Margin,营业利润率,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+income_tax_rate,Income Tax Rate,税率,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+net_profit_margin,Net Profit Margin,净利润率,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+working_capital,Working Capital,营运资本,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+return_on_total_capital,Return on Shareholders' Equity,净资产回报率,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+roe,Return on Total Capital,总资本回报率,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+retained_earnings_to_equity,Retained Earnings to Common Equity,留存收益比,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+dividends_to_net_profit,All Dividends to Net Profit,股息占净利润比例,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+sales_growth_10y,Past 10 Years Growth_Sales,每股营收增长率（过去10年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+cash_flow_growth_10y,Past 10 Years Growth_Cash Flow,每股现金流增长率（过去10年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+earnings_growth_10y,Past 10 Years Growth_Earnings,每股净利润增长率（过去10年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+dividends_growth_10y,Past 10 Years Growth_Dividends,股每股息增长率（过去10年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+book_value_growth_10y,Past 10 Years Growth_Book Value,每股账面价值增长率（过去10年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+sales_growth_5y,Past 5 Years Growth_Sales,每股营收增长率（过去5年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+cash_flow_growth_5y,Past 5 Years Growth_Cash Flow,每股现金流增长率（过去5年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+earnings_growth_5y,Past 5 Years Growth_Earnings,每股净利润增长率（过去5年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+dividends_growth_5y,Past 5 Years Growth_Dividends,股每股息增长率（过去5年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出
+book_value_growth_5y,Past 5 Years Growth_Book Value,每股账面价值增长率（过去5年）,计算指标,calculated,计算指标，依赖其他基础指标计算得出

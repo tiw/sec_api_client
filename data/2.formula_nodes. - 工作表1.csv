@@ -1,0 +1,24 @@
+:ID,formula_expression,formula_chinese
+formula_1,revenue / shares_outstanding,营收/期末流通股数
+formula_2,(net_profit + depreciation_amortization) / shares_outstanding,（净利润 + 折旧摊销）/期末流通股数
+formula_3,net_profit / diluted_shares_outstanding,净利润/稀释后平均流通股数
+formula_4,total_dividends / diluted_shares_outstanding,股息总额 /稀释后平均流通股数
+formula_5,capital_expenditure / shares_outstanding,CapEx /期末流通股数
+formula_6,shareholders_equity / shares_outstanding,净资产/期末流通股数
+formula_7,average_annual_price / eps,年平均价格/EPS
+formula_8,avg_pe_ratio / market_avg_pe,公司PE/市场平均PE
+formula_9,annual_dividends / average_share_price,年股息/平均股价
+formula_10,(operating_income + depreciation_amortization) / revenue,EBITDA/Revenue=（营业利润+折旧摊销）/营收
+formula_11,pretax_income - income_tax,Pretax Income - Income Tax=Operating Income-Interest +Other Expenses- Income Tax
+formula_12,income_tax / pretax_income,Income Tax / Pretax Income
+formula_13,net_profit / revenue,净利润/营收
+formula_14,current_assets - current_liability,流动资产 − 流动负债
+formula_15,net_profit / shareholders_equity,净利润/股东权益
+formula_16,(net_profit + long_term_debt * 0.04 * (1 - income_tax_rate)) / (long_term_debt + shareholders_equity),净利润+LT Debt*利率*（1-税率）
+formula_17,retained_earnings / shareholders_equity,Retained Earnings / Shr. Equity
+formula_18,total_dividends / net_profit,年股息/净利润
+formula_19,volume_traded / shares_outstanding,月交易量/流通股总数
+formula_20,long_term_debt + short_term_debt,长期负债+短期负债
+formula_21,cash_and_cash_equivalents + marketable_securities,Cash and cash equivalents+Marketable securities
+formula_22,cash_assets + receivables + inventory_fifo + other_current_assets,现金资产+营收账款+库存+其他流动资产
+formula_23,accounts_payable + debt_due + other_current_liability,应付账款+应付债务+其他流动负债

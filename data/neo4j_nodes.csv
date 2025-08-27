@@ -1,0 +1,64 @@
+id,name,type,namespace,chinese_name,metric_type,source
+us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,WeightedAverageNumberOfDilutedSharesOutstanding,GAAP_CONCEPT,us-gaap,,,
+us-gaap:LiabilitiesCurrent,LiabilitiesCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,PaymentsToAcquirePropertyPlantAndEquipment,GAAP_CONCEPT,us-gaap,,,
+us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,RevenueFromContractWithCustomerExcludingAssessedTax,GAAP_CONCEPT,us-gaap,,,
+us-gaap:EarningsPerShareDiluted,EarningsPerShareDiluted,GAAP_CONCEPT,us-gaap,,,
+us-gaap:OtherLiabilitiesCurrent,OtherLiabilitiesCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:AssetsCurrent,AssetsCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,GAAP_CONCEPT,us-gaap,,,
+us-gaap:PaymentsOfDividends,PaymentsOfDividends,GAAP_CONCEPT,us-gaap,,,
+us-gaap:RetainedEarningsAccumulatedDeficit,RetainedEarningsAccumulatedDeficit,GAAP_CONCEPT,us-gaap,,,
+us-gaap:LongTermDebtCurrent,LongTermDebtCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:CommonStockSharesOutstanding,CommonStockSharesOutstanding,GAAP_CONCEPT,us-gaap,,,
+us-gaap:LongTermDebtNoncurrent,LongTermDebtNoncurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:InventoryNet,InventoryNet,GAAP_CONCEPT,us-gaap,,,
+us-gaap:NetIncomeLoss,NetIncomeLoss,GAAP_CONCEPT,us-gaap,,,
+us-gaap:DepreciationDepletionAndAmortization,DepreciationDepletionAndAmortization,GAAP_CONCEPT,us-gaap,,,
+us-gaap:AccountsReceivableNetCurrent,AccountsReceivableNetCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:StockholdersEquity,StockholdersEquity,GAAP_CONCEPT,us-gaap,,,
+us-gaap:IncomeTaxExpenseBenefit,IncomeTaxExpenseBenefit,GAAP_CONCEPT,us-gaap,,,
+us-gaap:OperatingIncomeLoss,OperatingIncomeLoss,GAAP_CONCEPT,us-gaap,,,
+us-gaap:LongTermDebt,LongTermDebt,GAAP_CONCEPT,us-gaap,,,
+us-gaap:CashAndCashEquivalentsAtCarryingValue,CashAndCashEquivalentsAtCarryingValue,GAAP_CONCEPT,us-gaap,,,
+us-gaap:AccountsPayableCurrent,AccountsPayableCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:MarketableSecuritiesCurrent,MarketableSecuritiesCurrent,GAAP_CONCEPT,us-gaap,,,
+us-gaap:CommonStockDividendsPerShareDeclared,CommonStockDividendsPerShareDeclared,GAAP_CONCEPT,us-gaap,,,
+us-gaap:CommonStockSharesIssued,CommonStockSharesIssued,GAAP_CONCEPT,us-gaap,,,
+us-gaap:OtherAssetsCurrent,OtherAssetsCurrent,GAAP_CONCEPT,us-gaap,,,
+metric_eps,Earnings per Share,FINANCIAL_METRIC,,每股收益,计算指标,main_metrics
+metric_dividends_per_share,Dividends Declared per Share,FINANCIAL_METRIC,,每股分红,计算指标,main_metrics
+metric_shares_outstanding,Common Shares Outstanding,FINANCIAL_METRIC,,期末流通股数,基础指标,main_metrics
+metric_revenue,Revenue,FINANCIAL_METRIC,,营收,基础指标,main_metrics
+metric_depreciation_amortization,Depreciation&Amortization,FINANCIAL_METRIC,,折旧摊销,基础指标,main_metrics
+metric_net_profit,Net Profit,FINANCIAL_METRIC,,净利润,计算指标,main_metrics
+metric_long_term_debt,Long-Term Debt,FINANCIAL_METRIC,,长期负债,基础指标,main_metrics
+metric_shareholders_equity,Shareholders' Equity,FINANCIAL_METRIC,,股东权益,基础指标,main_metrics
+metric_total_debt,Total Debt,FINANCIAL_METRIC,,总负债,计算指标,main_metrics
+metric_common_stock,Common Stock,FINANCIAL_METRIC,,普通股数量,基础指标,main_metrics
+metric_cash_assets,Cash Assets,FINANCIAL_METRIC,,现金资产,计算指标,main_metrics
+metric_receivables,Receivables,FINANCIAL_METRIC,,应收账款,基础指标,main_metrics
+metric_inventory_fifo,Inventory (FIFO),FINANCIAL_METRIC,,库存,基础指标,main_metrics
+metric_other_current_assets,Other Current Assets,FINANCIAL_METRIC,,其他流动资产,计算指标,main_metrics
+metric_current_assets,Current Assets,FINANCIAL_METRIC,,流动资产合计,计算指标,main_metrics
+metric_accounts_payable,Accts Payable,FINANCIAL_METRIC,,应付账款,基础指标,main_metrics
+metric_debt_due,Debt Due,FINANCIAL_METRIC,,应付债务,基础指标,main_metrics
+metric_other_current_liability,Other Current Liability,FINANCIAL_METRIC,,其他流动负债,计算指标,main_metrics
+metric_current_liability,Current Liability,FINANCIAL_METRIC,,流动负债合计,计算指标,main_metrics
+metric_quarterly_revenue,Quarterly Revenues,FINANCIAL_METRIC,,季度营收,基础指标,main_metrics
+metric_quarterly_eps,QUARTERLY Earnings per Share,FINANCIAL_METRIC,,季度每股收益,基础指标,main_metrics
+metric_quarterly_dividends,Quarterly Dividends Paid,FINANCIAL_METRIC,,季度股息,基础指标,main_metrics
+metric_diluted_shares_outstanding,Diluted Shares Outstanding,FINANCIAL_METRIC,,稀释后平均流通股数,基础指标,process_metrics
+metric_total_dividends,Total Dividends,FINANCIAL_METRIC,,股息总额,基础指标,process_metrics
+metric_capital_expenditure,Capital Expenditure,FINANCIAL_METRIC,,资本支出,基础指标,process_metrics
+metric_annual_dividends,Annual Dividends,FINANCIAL_METRIC,,年股息,基础指标,process_metrics
+metric_operating_income,Operating Income,FINANCIAL_METRIC,,营业利润,基础指标,process_metrics
+metric_pretax_income,Pretax Income,FINANCIAL_METRIC,,税前利润,基础指标,process_metrics
+metric_income_tax,Income Tax,FINANCIAL_METRIC,,所得税,基础指标,process_metrics
+metric_retained_earnings,Retained Earnings,FINANCIAL_METRIC,,留存收益,基础指标,process_metrics
+metric_short_term_debt,Short Term Debt,FINANCIAL_METRIC,,短期负债,基础指标,process_metrics
+metric_cash_and_cash_equivalents,Cash and Cash Equivalents,FINANCIAL_METRIC,,现金及现金等价物,基础指标,process_metrics
+metric_marketable_securities,Marketable Securities,FINANCIAL_METRIC,,有价证券,基础指标,process_metrics
+metric_uncapitalized_leases,Leases,FINANCIAL_METRIC,,Leases,Uncap.,main_metrics
+metric_pension_liability,Pension Liability,FINANCIAL_METRIC,,养老金计划,基础指标,main_metrics
+metric_preferred_stock,Preferred Stock,FINANCIAL_METRIC,,优先股数量,基础指标,main_metrics

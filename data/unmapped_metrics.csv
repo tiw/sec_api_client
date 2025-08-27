@@ -1,0 +1,4 @@
+metric_id,metric_name,chinese_name,metric_type,source,reason
+uncapitalized_leases,Leases,Leases,Uncap.,main_metrics,No matching US-GAAP concept found
+pension_liability,Pension Liability,养老金计划,基础指标,main_metrics,No matching US-GAAP concept found
+preferred_stock,Preferred Stock,优先股数量,基础指标,main_metrics,No matching US-GAAP concept found

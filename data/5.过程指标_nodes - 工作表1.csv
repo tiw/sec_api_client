@@ -1,0 +1,16 @@
+:ID,name,name_product,name_chinese,metrics_type,view1,view2,view3,view_id
+diluted_shares_outstanding,Diluted Shares Outstanding,Diluted Shs Outst'g,稀释后平均流通股数,基础指标,企业价值,股东价值,,view_2
+total_dividends,Total Dividends,Total Div'ds,股息总额,基础指标,企业价值,资本分配效率,,view_14
+capital_expenditure,Capital Expenditure,CapEx,资本支出,基础指标,企业价值,资本分配效率,,view_14
+average_annual_price,Average Annual Price,Avg Ann'l Price,年平均价格,基础指标,估值水平,股价,,view_15
+market_avg_pe,Market Average P/E,Market Avg P/E,市场平均市盈率,基础指标,估值水平,市盈率,,view_5
+annual_dividends,Annual Dividends,Ann'l Div'ds,年股息,基础指标,估值水平,股息,,view_6
+average_share_price,Average Share Price,Avg Share Price,平均股价,基础指标,估值水平,股价,,view_15
+operating_income,Operating Income,Operating Income,营业利润,基础指标,企业价值,营收水平,,view_7
+pretax_income,Pretax Income,Pretax Income,税前利润,基础指标,企业价值,净利润水平,,view_9
+income_tax,Income Tax,Income Tax,所得税,基础指标,企业价值,净利润水平,,view_9
+retained_earnings,Retained Earnings,Retained Earnings,留存收益,基础指标,企业价值,资本分配效率,,view_14
+volume_traded,Volume Traded,Volume Traded,交易量,基础指标,估值水平,交易量,,view_17
+short_term_debt,Short Term Debt,ST Debt,短期负债,基础指标,企业价值,资本结构健康度,Debt结构,view_18
+cash_and_cash_equivalents,Cash and Cash Equivalents,Cash & Equiv,现金及现金等价物,基础指标,企业价值,资本结构健康度,流动资本安全性,view_12
+marketable_securities,Marketable Securities,Marketable Sec,有价证券,基础指标,企业价值,资本结构健康度,流动资本安全性,view_12
