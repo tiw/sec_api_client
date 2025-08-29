@@ -70,6 +70,7 @@ class SECFetcherDB:
         report_type_code: str,
         fiscal_years: List[int],
         section_name: Optional[str] = None,
+        metric_names: Optional[List[str]] = None,
         force_refresh: bool = False
     ) -> Tuple[pd.DataFrame, Dict]:
         """
@@ -80,6 +81,7 @@ class SECFetcherDB:
             report_type_code: 报告类型代码
             fiscal_years: 财政年度列表
             section_name: 报告部分名称（可选）
+            metric_names: 指定的指标名称列表（可选）
             force_refresh: 是否强制刷新（忽略缓存）
             
         Returns:
@@ -104,9 +106,12 @@ class SECFetcherDB:
         logger.info(f"🏢 公司: {company.name} (CIK: {company.cik}, Ticker: {company.ticker})")
         
         # 获取指标列表
-        metrics = self._get_metrics_to_fetch(report_type_code, section_name)
+        metrics = self._get_metrics_to_fetch(report_type_code, section_name, metric_names)
         if not metrics:
-            raise ValueError(f"未找到 {report_type_code} 报告的指标")
+            if metric_names:
+                raise ValueError(f"指定的指标 {metric_names} 无法创建")
+            else:
+                raise ValueError(f"未找到 {report_type_code} 报告的指标")
         
         logger.info(f"📊 报告类型: {report_type_code}")
         logger.info(f"📅 年份: {', '.join(map(str, fiscal_years))}")
@@ -186,9 +191,39 @@ class SECFetcherDB:
             logger.error(f"获取公司信息失败: {e}")
             return None
     
-    def _get_metrics_to_fetch(self, report_type_code: str, section_name: Optional[str] = None) -> List[Metric]:
-        """获取需要抓取的指标列表"""
-        if section_name:
+    def _get_metrics_to_fetch(
+        self, 
+        report_type_code: str, 
+        section_name: Optional[str] = None,
+        metric_names: Optional[List[str]] = None
+    ) -> List[Metric]:
+        """
+        获取需要抓取的指标列表
+        
+        Args:
+            report_type_code: 报告类型代码
+            section_name: 报告部分名称（可选）
+            metric_names: 指定的指标名称列表（可选）
+            
+        Returns:
+            Metric对象列表
+        """
+        if metric_names:
+            # 如果指定了具体的指标名称，创建虚拟Metric对象
+            metrics = []
+            for metric_name in metric_names:
+                # 创建一个虚拟Metric对象用于API获取
+                # 注意：这里我们不需要真实的数据库ID，只需要metric_name
+                class VirtualMetric:
+                    def __init__(self, name):
+                        self.id = -1  # 虚拟ID
+                        self.metric_name = name
+                        self.section_id = -1  # 虚拟ID
+                
+                metrics.append(VirtualMetric(metric_name))
+            return metrics
+            
+        elif section_name:
             # 获取指定部分的指标
             return self.db_utils.get_section_metrics(report_type_code, section_name)
         else:
@@ -267,6 +302,10 @@ class SECFetcherDB:
     
     def _check_existing_data(self, company: Company, metric: Metric, fiscal_year: int) -> Optional[FinancialData]:
         """检查数据库中是否已有数据"""
+        # 如果是虚拟Metric对象，则不检查数据库
+        if hasattr(metric, 'id') and metric.id == -1:
+            return None
+            
         with self.db_manager.get_session() as session:
             return session.query(FinancialData).filter_by(
                 company_id=company.id,
@@ -281,7 +320,7 @@ class SECFetcherDB:
         fiscal_year: int,
         report_type_code: str
     ) -> Optional[Dict]:
-        """从SEC API获取指标数据"""
+        """从SEC API获取指标数据（支持多种单位类型）"""
         try:
             # 获取公司特定概念的历史数据
             concept_data = self.xbrl_client.get_company_concept_data(
@@ -292,9 +331,11 @@ class SECFetcherDB:
             if not concept_data or 'units' not in concept_data:
                 return None
             
-            # 查找USD单位数据
-            unit_data = concept_data['units'].get('USD', [])
+            # 智能单位识别 - 参考apple_2024_10k_data.py的处理方式
+            unit_key, unit_data = self._determine_best_unit(concept_data['units'], metric.metric_name)
+            
             if not unit_data:
+                logger.debug(f"未找到适合的单位数据，指标: {metric.metric_name}")
                 return None
             
             # 查找指定年份和报告类型的数据
@@ -306,18 +347,8 @@ class SECFetcherDB:
                     # 找到匹配的数据
                     value = item.get('val', 0)
                     
-                    # 格式化数值
-                    if isinstance(value, (int, float)):
-                        if abs(value) >= 1e9:
-                            formatted_value = f"${value/1e9:.2f}B"
-                        elif abs(value) >= 1e6:
-                            formatted_value = f"${value/1e6:.2f}M"
-                        elif abs(value) >= 1e3:
-                            formatted_value = f"${value/1e3:.2f}K"
-                        else:
-                            formatted_value = f"${value:,.2f}"
-                    else:
-                        formatted_value = str(value)
+                    # 根据单位类型格式化数值
+                    formatted_value = self._format_value_by_unit(value, unit_key)
                     
                     return {
                         'company_id': company.id,
@@ -334,7 +365,7 @@ class SECFetcherDB:
                         'filed_date': item.get('filed', ''),
                         'value': value,
                         'formatted_value': formatted_value,
-                        'unit': 'USD',
+                        'unit': unit_key,
                         'frame': item.get('frame', ''),
                         'form_type': item.get('form', ''),
                         'accession_number': item.get('accn', ''),
@@ -347,9 +378,138 @@ class SECFetcherDB:
             logger.error(f"API获取失败: {e}")
             raise
     
+    def _determine_best_unit(self, units_dict: Dict, metric_name: str) -> Tuple[str, List[Dict]]:
+        """
+        智能单位识别 - 基于apple_2024_10k_data.py的逻辑
+        
+        Args:
+            units_dict: SEC返回的units字典
+            metric_name: 指标名称
+            
+        Returns:
+            (unit_key, unit_data): 最佳单位键和对应的数据列表
+        """
+        # 定义每股收益相关指标
+        earnings_per_share_metrics = [
+            'EarningsPerShareBasic', 'EarningsPerShareDiluted',
+            'EarningsPerShareBasicAndDiluted', 'EarningsPerShare'
+        ]
+        
+        # 定义股票数量相关指标
+        shares_metrics = [
+            'WeightedAverageNumberOfSharesOutstandingBasic',
+            'WeightedAverageNumberOfDilutedSharesOutstanding', 
+            'WeightedAverageNumberOfSharesOutstanding',
+            'CommonStockSharesIssued', 'CommonStockSharesOutstanding',
+            'CommonStockSharesAuthorized', 'PreferredStockSharesIssued',
+            'PreferredStockSharesOutstanding', 'PreferredStockSharesAuthorized'
+        ]
+        
+        # 1. 首先尝试根据指标名称确定期望的单位类型
+        if metric_name in earnings_per_share_metrics:
+            # 每股收益类指标，优先查找 USD/shares 类型
+            preferred_units = ['USD/shares', 'usd/shares']
+            for unit_key in preferred_units:
+                if unit_key in units_dict and units_dict[unit_key]:
+                    return unit_key, units_dict[unit_key]
+            
+            # 如果没有找到，尝试查找包含'shares'或'per'的单位
+            for unit_key, unit_data in units_dict.items():
+                if unit_data and ('shares' in unit_key.lower() or 'per' in unit_key.lower()):
+                    return unit_key, unit_data
+                    
+        elif metric_name in shares_metrics:
+            # 股票数量类指标，优先查找 shares 类型
+            preferred_units = ['shares', 'Shares']
+            for unit_key in preferred_units:
+                if unit_key in units_dict and units_dict[unit_key]:
+                    return unit_key, units_dict[unit_key]
+            
+            # 如果没有找到，尝试查找包含'shares'的单位
+            for unit_key, unit_data in units_dict.items():
+                if unit_data and 'shares' in unit_key.lower():
+                    return unit_key, unit_data
+        
+        # 2. 默认查找USD单位（最常见的财务数据单位）
+        if 'USD' in units_dict and units_dict['USD']:
+            return 'USD', units_dict['USD']
+        
+        # 3. 如果没有USD，查找其他可用的单位（按优先级）
+        unit_priority = ['usd', 'pure', 'shares', 'percent', 'per']
+        for priority_unit in unit_priority:
+            for unit_key, unit_data in units_dict.items():
+                if unit_data and priority_unit in unit_key.lower():
+                    return unit_key, unit_data
+        
+        # 4. 最后返回第一个有数据的单位
+        for unit_key, unit_data in units_dict.items():
+            if unit_data:
+                return unit_key, unit_data
+        
+        # 如果所有单位都没有数据，返回空
+        return '', []
+    
+    def _format_value_by_unit(self, value: Union[int, float, str], unit_key: str) -> str:
+        """
+        根据单位类型格式化数值
+        
+        Args:
+            value: 原始数值
+            unit_key: 单位键
+            
+        Returns:
+            格式化后的字符串
+        """
+        if not isinstance(value, (int, float)):
+            return str(value)
+        
+        # 每股收益和类似的USD/shares指标
+        if 'usd/shares' in unit_key.lower() or '/shares' in unit_key.lower():
+            return f"${value:.2f}"
+        
+        # 股票数量（shares）
+        elif 'shares' in unit_key.lower():
+            return f"{value:,.0f}"
+        
+        # 百分比
+        elif 'percent' in unit_key.lower() or '%' in unit_key:
+            return f"{value:.2%}"
+        
+        # Pure数值（比率等）
+        elif unit_key.lower() in ['pure', 'ratio']:
+            return f"{value:.4f}"
+        
+        # USD货币单位（默认处理）
+        elif 'usd' in unit_key.lower() or unit_key == 'USD':
+            if abs(value) >= 1e9:
+                return f"${value/1e9:.2f}B"
+            elif abs(value) >= 1e6:
+                return f"${value/1e6:.2f}M"
+            elif abs(value) >= 1e3:
+                return f"${value/1e3:.2f}K"
+            else:
+                return f"${value:,.2f}"
+        
+        # 其他单位类型
+        else:
+            # 对于大数值，使用科学计数法或简化表示
+            if abs(value) >= 1e9:
+                return f"{value/1e9:.2f}B"
+            elif abs(value) >= 1e6:
+                return f"{value/1e6:.2f}M"
+            elif abs(value) >= 1e3:
+                return f"{value/1e3:.2f}K"
+            else:
+                return f"{value:,.2f}"
+    
     def _save_financial_data(self, data: Dict):
         """保存财务数据到数据库"""
         try:
+            # 如果是虚拟Metric对象（metric_id = -1），则不保存到数据库
+            if data.get('metric_id', 0) == -1 or data.get('section_id', 0) == -1:
+                logger.debug(f"跳过保存虚拟指标 {data.get('metric_name', 'Unknown')} 到数据库")
+                return
+            
             with self.db_manager.get_session() as session:
                 # 获取报告类型
                 report_type = session.query(ReportType).join(ReportSection).filter(
@@ -505,6 +665,8 @@ def main():
   python sec_report_fetcher_db.py --company AAPL --report 10-K --year 2024
   python sec_report_fetcher_db.py --cik 0000320193 --report 10-K --section "Balance Sheet" --year 2020-2024
   python sec_report_fetcher_db.py --company MSFT --report 10-Q --year 2024 --section "Balance Sheet Summary"
+  python sec_report_fetcher_db.py --company AAPL --report 10-K --year 2024 --metrics EarningsPerShareBasic NetIncomeLoss
+  python sec_report_fetcher_db.py --company AAPL --report 10-K --year 2024 --metrics "RevenueFromContractWithCustomerExcludingAssessedTax"
   python sec_report_fetcher_db.py --db-stats  # 显示数据库统计信息
         """
     )
@@ -525,6 +687,10 @@ def main():
     
     parser.add_argument('--section', '-s',
                        help='报告部分 (如: Balance Sheet)')
+    
+    parser.add_argument('--metrics', '-m',
+                       nargs='+',
+                       help='指定具体的指标名称列表 (如: EarningsPerShareBasic NetIncomeLoss)')
     
     # 输出和行为参数
     parser.add_argument('--output', '-o',
@@ -628,6 +794,8 @@ def main():
         print(f"   年份: {', '.join(map(str, years))}")
         if args.section:
             print(f"   报告部分: {args.section}")
+        if args.metrics:
+            print(f"   指定指标: {', '.join(args.metrics)}")
         if args.force_refresh:
             print(f"   🔄 强制刷新模式")
         print(f"\n⚠️  提示: 为遵守SEC服务器政策，建议在美国业务时间外使用")
@@ -638,6 +806,7 @@ def main():
             report_type_code=args.report,
             fiscal_years=years,
             section_name=args.section,
+            metric_names=args.metrics,
             force_refresh=args.force_refresh
         )
         
