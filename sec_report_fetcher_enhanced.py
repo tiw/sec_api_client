@@ -15,14 +15,182 @@ import argparse
 import sys
 import os
 import json
-from datetime import datetime
-from typing import Dict, List, Optional, Union
+import pickle
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Union, Set
 
 # 添加项目路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '.'))
 
 from src import SECClient, XBRLFramesClient, DocumentRetriever
 import pandas as pd
+
+# 缓存配置
+CACHE_FILE_PATH = os.path.join(os.path.dirname(__file__), 'data', 'invalid_concepts_cache.pkl')
+CACHE_EXPIRY_DAYS = 7  # 缓存有效期：7天
+
+# 全局缓存变量
+invalid_concepts_cache = {
+    'cache_data': {},  # 格式: {(cik, report_type, year, concept): timestamp}
+    'last_updated': None
+}
+
+
+def load_invalid_concepts_cache() -> Dict:
+    """
+    加载无效指标缓存数据
+    
+    Returns:
+        缓存数据字典
+    """
+    global invalid_concepts_cache
+    
+    try:
+        if os.path.exists(CACHE_FILE_PATH):
+            with open(CACHE_FILE_PATH, 'rb') as f:
+                cache_data = pickle.load(f)
+                
+                # 检查缓存是否过期
+                if 'last_updated' in cache_data:
+                    last_updated = cache_data['last_updated']
+                    if isinstance(last_updated, datetime):
+                        cache_age = datetime.now() - last_updated
+                        if cache_age.days <= CACHE_EXPIRY_DAYS:
+                            invalid_concepts_cache = cache_data
+                            print(f"📦 已加载无效指标缓存，包含 {len(cache_data.get('cache_data', {}))} 条记录")
+                            return invalid_concepts_cache
+                        else:
+                            print(f"⏰ 缓存已过期（{cache_age.days}天），将重新创建")
+                
+        # 如果文件不存在或缓存过期，初始化新缓存
+        invalid_concepts_cache = {
+            'cache_data': {},
+            'last_updated': datetime.now()
+        }
+        print(f"🆕 创建新的无效指标缓存")
+        
+    except Exception as e:
+        print(f"⚠️  加载缓存时出错: {e}，将创建新缓存")
+        invalid_concepts_cache = {
+            'cache_data': {},
+            'last_updated': datetime.now()
+        }
+    
+    return invalid_concepts_cache
+
+
+def save_invalid_concepts_cache():
+    """
+    保存无效指标缓存到文件
+    """
+    try:
+        # 确保data目录存在
+        cache_dir = os.path.dirname(CACHE_FILE_PATH)
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        
+        # 更新最后修改时间
+        invalid_concepts_cache['last_updated'] = datetime.now()
+        
+        with open(CACHE_FILE_PATH, 'wb') as f:
+            pickle.dump(invalid_concepts_cache, f)
+        
+        print(f"💾 已保存无效指标缓存到: {CACHE_FILE_PATH}")
+        
+    except Exception as e:
+        print(f"⚠️  保存缓存时出错: {e}")
+
+
+def is_concept_invalid(cik: str, report_type: str, year: int, concept: str) -> bool:
+    """
+    检查指定的概念是否在无效缓存中
+    
+    Args:
+        cik: 公司CIK
+        report_type: 报告类型（如10-K, 10-Q）
+        year: 年份
+        concept: 财务概念名称
+        
+    Returns:
+        如果概念在缓存中且未过期，返回True；否则返回False
+    """
+    cache_key = (cik, report_type, year, concept)
+    
+    if cache_key in invalid_concepts_cache['cache_data']:
+        cached_time = invalid_concepts_cache['cache_data'][cache_key]
+        
+        # 检查缓存项是否过期
+        if isinstance(cached_time, datetime):
+            cache_age = datetime.now() - cached_time
+            if cache_age.days <= CACHE_EXPIRY_DAYS:
+                return True
+            else:
+                # 删除过期的缓存项
+                del invalid_concepts_cache['cache_data'][cache_key]
+    
+    return False
+
+
+def add_invalid_concept(cik: str, report_type: str, year: int, concept: str):
+    """
+    将无效的概念添加到缓存中
+    
+    Args:
+        cik: 公司CIK
+        report_type: 报告类型（如10-K, 10-Q）
+        year: 年份
+        concept: 财务概念名称
+    """
+    cache_key = (cik, report_type, year, concept)
+    invalid_concepts_cache['cache_data'][cache_key] = datetime.now()
+
+
+def get_cache_stats() -> Dict:
+    """
+    获取缓存统计信息
+    
+    Returns:
+        缓存统计字典
+    """
+    total_cached = len(invalid_concepts_cache['cache_data'])
+    
+    # 计算过期的缓存项数量
+    expired_count = 0
+    current_time = datetime.now()
+    
+    # 按公司和报告类型统计
+    company_stats = {}
+    report_type_stats = {}
+    
+    for cache_key, cached_time in invalid_concepts_cache['cache_data'].items():
+        if isinstance(cached_time, datetime):
+            cache_age = current_time - cached_time
+            if cache_age.days > CACHE_EXPIRY_DAYS:
+                expired_count += 1
+            else:
+                # 统计有效缓存
+                if len(cache_key) >= 4:  # (cik, report_type, year, concept)
+                    cik, report_type, year, concept = cache_key
+                    
+                    # 按公司统计
+                    if cik not in company_stats:
+                        company_stats[cik] = 0
+                    company_stats[cik] += 1
+                    
+                    # 按报告类型统计
+                    if report_type not in report_type_stats:
+                        report_type_stats[report_type] = 0
+                    report_type_stats[report_type] += 1
+    
+    return {
+        'total_cached': total_cached,
+        'expired_count': expired_count,
+        'valid_count': total_cached - expired_count,
+        'last_updated': invalid_concepts_cache.get('last_updated'),
+        'cache_file': CACHE_FILE_PATH,
+        'company_stats': company_stats,
+        'report_type_stats': report_type_stats
+    }
 
 
 def load_ticker_cik_mapping() -> Dict[str, str]:
@@ -272,6 +440,9 @@ def fetch_sec_report_data(company_id: str, report_type: str, years: List[int],
     # 加载报告指标映射
     metrics_mapping = load_report_metrics_mapping()
     
+    # 加载无效指标缓存
+    load_invalid_concepts_cache()
+    
     # 获取公司信息
     print(f"🔍 正在获取公司信息...")
     company_info = get_company_info(sec_client, company_id, is_cik, ticker_cik_map)
@@ -298,6 +469,13 @@ def fetch_sec_report_data(company_id: str, report_type: str, years: List[int],
     print(f"📊 报告类型: {report_type}")
     print(f"📅 年份: {', '.join(map(str, years))}")
     
+    # 统计信息
+    total_concepts = len(concepts)
+    cached_skipped = 0
+    api_requested = 0
+    successful_retrieved = 0
+    newly_cached = 0
+    
     # 收集数据
     all_data = []
     
@@ -305,8 +483,15 @@ def fetch_sec_report_data(company_id: str, report_type: str, years: List[int],
         print(f"\n📅 正在获取 {year} 年数据...")
         
         for concept in concepts:
+            # 检查是否在缓存中（已知无效）
+            if is_concept_invalid(company_info['cik'], report_type, year, concept):
+                print(f"⏩ 跳过 {concept} (缓存中已知无效 - {report_type} {year})")
+                cached_skipped += 1
+                continue
+            
             try:
                 print(f"  🔄 获取 {concept}...")
+                api_requested += 1
                 
                 # 获取公司特定概念的历史数据
                 concept_data = xbrl_client.get_company_concept_data(
@@ -320,6 +505,7 @@ def fetch_sec_report_data(company_id: str, report_type: str, years: List[int],
                     
                     if unit_data:
                         # 查找指定年份的数据
+                        found_data = False
                         for item in unit_data:
                             fiscal_year = item.get('fy', 0)
                             form_type = item.get('form', '')
@@ -355,16 +541,47 @@ def fetch_sec_report_data(company_id: str, report_type: str, years: List[int],
                                     'frame': item.get('frame', '')
                                 })
                                 print(f"    ✅ {concept}: {formatted_value}")
+                                successful_retrieved += 1
+                                found_data = True
                                 break  # 找到匹配的数据后跳出循环
-                        else:
+                        
+                        if not found_data:
                             print(f"    ⚠️  未找到 {year} 年 {report_type} 报告中的 {concept} 数据")
+                            # 没有找到对应年份的数据，但不认为是无效概念
                     else:
                         print(f"    ⚠️  {concept} 没有USD单位数据")
+                        # USD单位数据不存在，可能是非货币类指标，不缓存
                 else:
                     print(f"    ⚠️  无法获取 {concept} 数据")
+                    # API返回空数据或无units，可能是无效概念，加入缓存
+                    add_invalid_concept(company_info['cik'], report_type, year, concept)
+                    newly_cached += 1
                     
             except Exception as e:
-                print(f"    ❌ 获取 {concept} 时出错: {e}")
+                error_msg = str(e)
+                if "404" in error_msg or "Not Found" in error_msg:
+                    print(f"    ❌ 概念 {concept} 在 {report_type} {year} 中不存在（404错误），已加入缓存")
+                    # 404错误，表示概念在该公司的该报告中不存在，加入缓存
+                    add_invalid_concept(company_info['cik'], report_type, year, concept)
+                    newly_cached += 1
+                else:
+                    print(f"    ❌ 获取 {concept} 时出错: {e}")
+    
+    # 保存缓存更新
+    if newly_cached > 0:
+        save_invalid_concepts_cache()
+    
+    # 显示统计信息
+    print(f"\n📈 查询统计:")
+    print(f"  总数: {total_concepts} 个指标")
+    print(f"  缓存跳过: {cached_skipped} 个 (提升性能)")
+    print(f"  API请求: {api_requested} 个")
+    print(f"  成功获取: {successful_retrieved} 个")
+    print(f"  新增缓存: {newly_cached} 个无效指标")
+    
+    if cached_skipped > 0:
+        efficiency_improvement = (cached_skipped / total_concepts) * 100
+        print(f"  性能提升: {efficiency_improvement:.1f}% (减少了 {cached_skipped} 次无效API请求)")
     
     if not all_data:
         print(f"\n❌ 未获取到任何数据")
@@ -407,6 +624,9 @@ def main():
     help_parser.add_argument('--help-reports', 
                             action='store_true',
                             help='显示支持的报告类型')
+    help_parser.add_argument('--cache-stats', 
+                            action='store_true',
+                            help='显示缓存统计信息')
     
     # 先解析帮助选项
     help_args, _ = help_parser.parse_known_args()
@@ -438,6 +658,38 @@ def main():
         else:
             print("  10-K: 年度报告")
             print("  10-Q: 季度报告")
+        return
+    
+    # 显示缓存统计信息
+    if help_args.cache_stats:
+        print("📊 无效指标缓存统计:")
+        load_invalid_concepts_cache()
+        stats = get_cache_stats()
+        
+        print(f"  缓存文件: {stats['cache_file']}")
+        print(f"  总缓存数: {stats['total_cached']} 个无效指标")
+        print(f"  有效缓存: {stats['valid_count']} 个")
+        print(f"  过期缓存: {stats['expired_count']} 个")
+        if stats['last_updated']:
+            print(f"  最后更新: {stats['last_updated'].strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        # 显示按公司分组的统计
+        if stats['company_stats']:
+            print(f"\n🏢 按公司分组的缓存统计:")
+            for cik, count in sorted(stats['company_stats'].items()):
+                print(f"  CIK {cik}: {count} 个无效指标")
+        
+        # 显示按报告类型分组的统计
+        if stats['report_type_stats']:
+            print(f"\n📄 按报告类型分组的缓存统计:")
+            for report_type, count in sorted(stats['report_type_stats'].items()):
+                print(f"  {report_type}: {count} 个无效指标")
+        
+        if stats['valid_count'] > 0:
+            print(f"\n📈 性能提升: 可节省 {stats['valid_count']} 次无效API请求")
+            print(f"🎯 缓存覆盖范围: {len(stats['company_stats'])} 家公司的 {len(stats['report_type_stats'])} 种报告类型")
+        else:
+            print(f"\n🆕 缓存为空，将在首次查询后建立")
         return
     
     # 公司标识参数组
@@ -544,6 +796,11 @@ def main():
                     print(f"\n💾 数据已保存到: {output_file}")
             except Exception as e:
                 print(f"⚠️  保存文件时出错: {e}")
+        
+        # 显示缓存统计信息
+        cache_stats = get_cache_stats()
+        if cache_stats['valid_count'] > 0:
+            print(f"\n💾 缓存信息: {cache_stats['valid_count']} 个无效指标已缓存，提升后续查询性能")
         
         print(f"\n✅ 完成!")
         

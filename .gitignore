@@ -74,6 +74,10 @@ venv.bak/
 *.xlsx
 *.json
 
+# 缓存文件
+*.pkl
+data/invalid_concepts_cache.pkl
+
 # 大型原始数据文件
 *.txt
 !requirements.txt
