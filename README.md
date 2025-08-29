@@ -10,6 +10,7 @@
 - **📊 财务分析**: 计算财务比率、增长率、趋势分析
 - **📈 同行对比**: 多公司财务数据对比分析
 - **📅 季节性分析**: 基于季度数据的周期性分析
+- **📋 增强版报告数据获取**: 支持全面的SEC报告类型和指标
 
 ## 📺 项目结构
 
@@ -26,11 +27,15 @@
 │   ├── basic_usage.py       # 基本使用示例
 │   ├── xbrl_frames_demo.py  # XBRL数据演示
 │   └── financial_analysis_demo.py # 财务分析演示
+├── data/                    # 数据文件目录
+│   └── report_metrics_analysis.json # 报告指标分析数据
 ├── tests/                   # 测试代码目录
-├── main.py                 # 主程序入口
-├── requirements.txt        # 项目依赖
-├── README.md              # 项目文档
-└── .gitignore             # Git忽略文件配置
+├── sec_report_fetcher.py    # 基础版SEC报告数据获取工具
+├── sec_report_fetcher_enhanced.py # 增强版SEC报告数据获取工具
+├── main.py                  # 主程序入口
+├── requirements.txt         # 项目依赖
+├── README.md               # 项目文档
+└── .gitignore              # Git忽略文件配置
 ```
 
 ## ⚡ 快速开始
@@ -74,6 +79,22 @@ python examples/xbrl_frames_demo.py
 
 # 财务分析演示
 python examples/financial_analysis_demo.py
+```
+
+### 4. 使用增强版SEC报告数据获取工具
+
+```bash
+# 查看支持的报告类型
+python sec_report_fetcher_enhanced.py --help-reports
+
+# 查看支持的报告部分
+python sec_report_fetcher_enhanced.py --help-sections
+
+# 获取苹果公司2023年10-K报告的所有主要财务数据
+python sec_report_fetcher_enhanced.py --company AAPL --report 10-K --year 2023 --output apple_2023_data.csv
+
+# 获取苹果公司2023年10-K报告的资产负债表数据
+python sec_report_fetcher_enhanced.py --company AAPL --report 10-K --section "Balance Sheet" --year 2023 --output apple_2023_balance_sheet.csv
 ```
 
 ## 📚 API使用指南
@@ -145,6 +166,30 @@ trends = analyzer.trend_analysis(financial_data, ['Revenues', 'NetIncomeLoss'])
 
 # 同行对比
 comparison = analyzer.peer_comparison(companies_data, 'Revenues')
+```
+
+### 增强版SEC报告数据获取工具
+
+增强版工具支持从`report_metrics_analysis.json`文件中动态加载所有支持的报告类型、部分和指标：
+
+```bash
+# 支持的报告类型（基于report_metrics_analysis.json）：
+# - 10-K（年度报告）- 3728个指标
+# - 10-Q（季度报告）- 615个指标
+# - 13-F（机构投资者持仓报告）- 686个指标
+# - 8-K（重大事件报告）- 580个指标
+
+# 支持的报告部分（示例）：
+# - 10-K报告：
+#   - Balance Sheet（资产负债表）- 526个指标
+#   - Equity Statement（权益变动表）- 756个指标
+#   - Accounting Policies（会计政策）- 488个指标
+#   - Debt Disclosure（债务披露）- 592个指标
+#   - 等11个部分
+# - 10-Q报告：
+#   - Balance Sheet Summary（资产负债表摘要）- 218个指标
+#   - Net Income Summary（净利润摘要）- 131个指标
+#   - Operating Cash Flow Summary（经营现金流摘要）- 266个指标
 ```
 
 ## 📊 支持的财务指标
