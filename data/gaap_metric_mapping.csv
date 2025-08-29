@@ -1,34 +1,38 @@
-metric_id,metric_name,chinese_name,us_gaap_concept,mapping_status,metric_type,source
-eps,Earnings per Share,每股收益,us-gaap:EarningsPerShareDiluted,mapped,计算指标,main_metrics
-dividends_per_share,Dividends Declared per Share,每股分红,us-gaap:CommonStockDividendsPerShareDeclared,mapped,计算指标,main_metrics
-shares_outstanding,Common Shares Outstanding,期末流通股数,us-gaap:CommonStockSharesIssued,mapped,基础指标,main_metrics
-revenue,Revenue,营收,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,mapped,基础指标,main_metrics
-depreciation_amortization,Depreciation&Amortization,折旧摊销,us-gaap:DepreciationDepletionAndAmortization,mapped,基础指标,main_metrics
-net_profit,Net Profit,净利润,us-gaap:NetIncomeLoss,mapped,计算指标,main_metrics
-long_term_debt,Long-Term Debt,长期负债,us-gaap:LongTermDebtNoncurrent,mapped,基础指标,main_metrics
-shareholders_equity,Shareholders' Equity,股东权益,us-gaap:StockholdersEquity,mapped,基础指标,main_metrics
-total_debt,Total Debt,总负债,us-gaap:LongTermDebt,mapped,计算指标,main_metrics
-common_stock,Common Stock,普通股数量,us-gaap:CommonStockSharesOutstanding,mapped,基础指标,main_metrics
-cash_assets,Cash Assets,现金资产,us-gaap:CashAndCashEquivalentsAtCarryingValue,mapped,计算指标,main_metrics
-receivables,Receivables,应收账款,us-gaap:AccountsReceivableNetCurrent,mapped,基础指标,main_metrics
-inventory_fifo,Inventory (FIFO),库存,us-gaap:InventoryNet,mapped,基础指标,main_metrics
-other_current_assets,Other Current Assets,其他流动资产,us-gaap:OtherAssetsCurrent,mapped,计算指标,main_metrics
-current_assets,Current Assets,流动资产合计,us-gaap:AssetsCurrent,mapped,计算指标,main_metrics
-accounts_payable,Accts Payable,应付账款,us-gaap:AccountsPayableCurrent,mapped,基础指标,main_metrics
-debt_due,Debt Due,应付债务,us-gaap:LongTermDebtCurrent,mapped,基础指标,main_metrics
-other_current_liability,Other Current Liability,其他流动负债,us-gaap:OtherLiabilitiesCurrent,mapped,计算指标,main_metrics
-current_liability,Current Liability,流动负债合计,us-gaap:LiabilitiesCurrent,mapped,计算指标,main_metrics
-quarterly_revenue,Quarterly Revenues,季度营收,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,mapped,基础指标,main_metrics
-quarterly_eps,QUARTERLY Earnings per Share,季度每股收益,us-gaap:EarningsPerShareDiluted,mapped,基础指标,main_metrics
-quarterly_dividends,Quarterly Dividends Paid,季度股息,us-gaap:CommonStockDividendsPerShareDeclared,mapped,基础指标,main_metrics
-diluted_shares_outstanding,Diluted Shares Outstanding,稀释后平均流通股数,us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding,mapped,基础指标,process_metrics
-total_dividends,Total Dividends,股息总额,us-gaap:PaymentsOfDividends,mapped,基础指标,process_metrics
-capital_expenditure,Capital Expenditure,资本支出,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,mapped,基础指标,process_metrics
-annual_dividends,Annual Dividends,年股息,us-gaap:CommonStockDividendsPerShareDeclared,mapped,基础指标,process_metrics
-operating_income,Operating Income,营业利润,us-gaap:OperatingIncomeLoss,mapped,基础指标,process_metrics
-pretax_income,Pretax Income,税前利润,us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest,mapped,基础指标,process_metrics
-income_tax,Income Tax,所得税,us-gaap:IncomeTaxExpenseBenefit,mapped,基础指标,process_metrics
-retained_earnings,Retained Earnings,留存收益,us-gaap:RetainedEarningsAccumulatedDeficit,mapped,基础指标,process_metrics
-short_term_debt,Short Term Debt,短期负债,us-gaap:LongTermDebtCurrent,mapped,基础指标,process_metrics
-cash_and_cash_equivalents,Cash and Cash Equivalents,现金及现金等价物,us-gaap:CashAndCashEquivalentsAtCarryingValue,mapped,基础指标,process_metrics
-marketable_securities,Marketable Securities,有价证券,us-gaap:MarketableSecuritiesCurrent,mapped,基础指标,process_metrics
+metric_id,metric_name,us_gaap_concept,mapping_status,confidence,mapping_method
+metric_001,MarketableSecuritiesCurrent,us-gaap:MarketableSecuritiesCurrent,mapped,0.9,concept_explainer
+metric_002,InventoryNet,us-gaap:InventoryNet,mapped,0.9,concept_explainer
+metric_003,EarningsPerShareBasic,us-gaap:EarningsPerShareBasic,mapped,0.9,concept_explainer
+metric_004,Cash,us-gaap:Cash,mapped,0.9,concept_explainer
+metric_005,OperatingIncomeLoss,us-gaap:OperatingIncomeLoss,mapped,0.9,concept_explainer
+metric_006,OperatingExpenses,us-gaap:OperatingExpenses,mapped,0.9,concept_explainer
+metric_007,CashAndCashEquivalentsAtCarryingValue,us-gaap:CashAndCashEquivalentsAtCarryingValue,mapped,0.9,concept_explainer
+metric_008,PaymentsToAcquirePropertyPlantAndEquipment,us-gaap:PaymentsToAcquirePropertyPlantAndEquipment,mapped,0.9,concept_explainer
+metric_009,CommercialPaper,us-gaap:CommercialPaper,mapped,0.9,concept_explainer
+metric_010,IncomeTaxExpenseBenefit,us-gaap:IncomeTaxExpenseBenefit,mapped,0.9,concept_explainer
+metric_011,ShareBasedCompensation,us-gaap:ShareBasedCompensation,mapped,0.9,concept_explainer
+metric_012,PaymentsForRepurchaseOfCommonStock,us-gaap:PaymentsForRepurchaseOfCommonStock,mapped,0.9,concept_explainer
+metric_013,NetCashProvidedByUsedInFinancingActivities,us-gaap:NetCashProvidedByUsedInFinancingActivities,mapped,0.9,concept_explainer
+metric_014,Dividends,us-gaap:Dividends,mapped,0.9,concept_explainer
+metric_015,AccountsReceivableNetCurrent,us-gaap:AccountsReceivableNetCurrent,mapped,0.9,concept_explainer
+metric_016,Assets,us-gaap:Assets,mapped,0.9,concept_explainer
+metric_017,RevenueFromContractWithCustomerExcludingAssessedTax,us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax,mapped,0.9,concept_explainer
+metric_018,CostOfRevenue,us-gaap:CostOfRevenue,mapped,0.9,concept_explainer
+metric_019,NetCashProvidedByUsedInOperatingActivities,us-gaap:NetCashProvidedByUsedInOperatingActivities,mapped,0.9,concept_explainer
+metric_020,Revenues,us-gaap:Revenues,mapped,0.9,concept_explainer
+metric_021,LongTermDebtCurrent,us-gaap:LongTermDebtCurrent,mapped,0.9,concept_explainer
+metric_022,PaymentsOfDividends,us-gaap:PaymentsOfDividends,mapped,0.9,concept_explainer
+metric_023,AssetsCurrent,us-gaap:AssetsCurrent,mapped,0.9,concept_explainer
+metric_024,AccountsPayableCurrent,us-gaap:AccountsPayableCurrent,mapped,0.9,concept_explainer
+metric_025,CommonStockDividendsPerShareDeclared,us-gaap:CommonStockDividendsPerShareDeclared,mapped,0.9,concept_explainer
+metric_026,NetCashProvidedByUsedInInvestingActivities,us-gaap:NetCashProvidedByUsedInInvestingActivities,mapped,0.9,concept_explainer
+metric_027,LongTermDebtNoncurrent,us-gaap:LongTermDebtNoncurrent,mapped,0.9,concept_explainer
+metric_028,EarningsPerShareDiluted,us-gaap:EarningsPerShareDiluted,mapped,0.9,concept_explainer
+metric_029,StockholdersEquity,us-gaap:StockholdersEquity,mapped,0.9,concept_explainer
+metric_030,LiabilitiesNoncurrent,us-gaap:LiabilitiesNoncurrent,mapped,0.9,concept_explainer
+metric_031,RetainedEarningsAccumulatedDeficit,us-gaap:RetainedEarningsAccumulatedDeficit,mapped,0.9,concept_explainer
+metric_032,GrossProfit,us-gaap:GrossProfit,mapped,0.9,concept_explainer
+metric_033,Liabilities,us-gaap:Liabilities,mapped,0.9,concept_explainer
+metric_034,DepreciationDepletionAndAmortization,us-gaap:DepreciationDepletionAndAmortization,mapped,0.9,concept_explainer
+metric_035,LiabilitiesCurrent,us-gaap:LiabilitiesCurrent,mapped,0.9,concept_explainer
+metric_036,NetIncomeLoss,us-gaap:NetIncomeLoss,mapped,0.9,concept_explainer
+metric_037,AssetsNoncurrent,us-gaap:AssetsNoncurrent,mapped,0.9,concept_explainer

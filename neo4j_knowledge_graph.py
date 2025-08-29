@@ -11,6 +11,11 @@ from pathlib import Path
 import logging
 from typing import List, Dict, Any
 import json
+import os
+from dotenv import load_dotenv
+
+# 加载环境变量
+load_dotenv()
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -101,37 +106,63 @@ class FinancialMetricsKnowledgeGraph:
         """导入财务指标"""
         logger.info("导入财务指标...")
         
-        # 导入主要指标
-        metrics_df = pd.read_csv(self.data_dir / "1.metrics_nodes - 工作表1.csv")
-        process_df = pd.read_csv(self.data_dir / "5.过程指标_nodes - 工作表1.csv")
+        # 导入主要指标 - 使用不带中文的文件名
+        main_file = self.data_dir / "1.metrics_nodes.csv"
+        process_file = self.data_dir / "5.process_metrics_nodes.csv"  # 假设重命名后的文件名
+        
+        # 如果新文件不存在，尝试使用原文件名
+        if not main_file.exists():
+            main_file = self.data_dir / "1.metrics_nodes - 工作表1.csv"
+        if not process_file.exists():
+            process_file = self.data_dir / "5.过程指标_nodes - 工作表1.csv"
+        
+        if not main_file.exists():
+            logger.error(f"主要指标文件不存在: {main_file}")
+            return False
         
         all_metrics = []
         
         # 处理主要指标
-        for _, row in metrics_df.iterrows():
-            all_metrics.append({
-                'id': f"metric_{row[':ID']}",
-                'metric_id': row[':ID'],
-                'name': row['name'],
-                'chinese_name': row['name_chinese'],
-                'metric_type': row['metrics_type'],
-                'source': 'main_metrics',
-                'formula_id': row.get('formula_id', ''),
-                'view_id': row.get('view_id', '')
-            })
+        try:
+            metrics_df = pd.read_csv(main_file)
+            for _, row in metrics_df.iterrows():
+                all_metrics.append({
+                    'id': f"metric_{row[':ID']}",
+                    'metric_id': row[':ID'],
+                    'name': row['name'],
+                    'chinese_name': row['name_chinese'],
+                    'metric_type': row['metrics_type'],
+                    'source': 'main_metrics',
+                    'formula_id': row.get('formula_id', ''),
+                    'view_id': row.get('view_id', '')
+                })
+            logger.info(f"加载了 {len(metrics_df)} 个主要指标")
+        except Exception as e:
+            logger.error(f"加载主要指标失败: {e}")
         
-        # 处理过程指标
-        for _, row in process_df.iterrows():
-            all_metrics.append({
-                'id': f"metric_{row[':ID']}",
-                'metric_id': row[':ID'],
-                'name': row['name'],
-                'chinese_name': row['name_chinese'],
-                'metric_type': row['metrics_type'],
-                'source': 'process_metrics',
-                'formula_id': '',
-                'view_id': row.get('view_id', '')
-            })
+        # 处理过程指标（如果文件存在且不为空）
+        if process_file.exists():
+            try:
+                process_df = pd.read_csv(process_file)
+                if not process_df.empty:
+                    for _, row in process_df.iterrows():
+                        all_metrics.append({
+                            'id': f"metric_{row[':ID']}",
+                            'metric_id': row[':ID'],
+                            'name': row['name'],
+                            'chinese_name': row['name_chinese'],
+                            'metric_type': row['metrics_type'],
+                            'source': 'process_metrics',
+                            'formula_id': '',
+                            'view_id': row.get('view_id', '')
+                        })
+                    logger.info(f"加载了 {len(process_df)} 个过程指标")
+                else:
+                    logger.info("过程指标文件为空，跳过")
+            except Exception as e:
+                logger.warning(f"加载过程指标失败: {e}")
+        else:
+            logger.info("过程指标文件不存在，跳过")
         
         # 批量导入指标
         for metric in all_metrics:
@@ -151,23 +182,42 @@ class FinancialMetricsKnowledgeGraph:
         """导入视图结构"""
         logger.info("导入视图结构...")
         
-        views_df = pd.read_csv(self.data_dir / "4.view_nodes - 工作表1.csv")
+        # 使用不带中文的文件名
+        views_file = self.data_dir / "4.view_nodes.csv"
         
-        for _, row in views_df.iterrows():
-            self.execute_cypher("""
-                MERGE (v:View {id: $id})
-                SET v.name = $name,
-                    v.level = $level,
-                    v.parent_id = $parent_id,
-                    v.created_at = datetime()
-            """, {
-                'id': row[':ID'],
-                'name': row['view_name'],
-                'level': int(row['level']),
-                'parent_id': row['parent_id'] if pd.notna(row['parent_id']) else None
-            })
+        # 如果新文件不存在，尝试使用原文件名
+        if not views_file.exists():
+            views_file = self.data_dir / "4.view_nodes - 工作表1.csv"
         
-        logger.info(f"导入了 {len(views_df)} 个视图")
+        if not views_file.exists():
+            logger.warning("视图文件不存在，跳过视图导入")
+            return
+        
+        try:
+            views_df = pd.read_csv(views_file)
+            
+            if views_df.empty:
+                logger.info("视图数据为空，跳过视图导入")
+                return
+            
+            for _, row in views_df.iterrows():
+                self.execute_cypher("""
+                    MERGE (v:View {id: $id})
+                    SET v.name = $name,
+                        v.level = $level,
+                        v.parent_id = $parent_id,
+                        v.created_at = datetime()
+                """, {
+                    'id': row[':ID'],
+                    'name': row['view_name'],
+                    'level': int(row['level']),
+                    'parent_id': row['parent_id'] if pd.notna(row['parent_id']) else None
+                })
+            
+            logger.info(f"导入了 {len(views_df)} 个视图")
+            
+        except Exception as e:
+            logger.error(f"导入视图失败: {e}")
     
     def import_formulas(self):
         """导入公式"""
@@ -186,8 +236,60 @@ class FinancialMetricsKnowledgeGraph:
                 'expression': row['formula_expression'],
                 'chinese_description': row['formula_chinese']
             })
+    def import_formulas(self):
+        """导入公式"""
+        logger.info("导入公式...")
         
-        logger.info(f"导入了 {len(formulas_df)} 个公式")
+        # 使用不带中文的文件名
+        formulas_file = self.data_dir / "2.formula_nodes.csv"
+        
+        # 如果新文件不存在，尝试使用原文件名
+        if not formulas_file.exists():
+            formulas_file = self.data_dir / "2.formula_nodes. - 工作表1.csv"
+        
+        if not formulas_file.exists():
+            logger.info("公式文件不存在，跳过公式导入")
+            return
+        
+        try:
+            # 检查文件是否为空
+            if formulas_file.stat().st_size <= 1:  # 空文件或只有换行符
+                logger.info("公式文件为空，跳过公式导入")
+                return
+            
+            formulas_df = pd.read_csv(formulas_file)
+            
+            # 检查DataFrame是否为空
+            if formulas_df.empty:
+                logger.info("公式数据为空，跳过公式导入")
+                return
+            
+            # 检查必要的列是否存在
+            required_columns = [':ID', 'formula_expression', 'formula_chinese']
+            missing_columns = [col for col in required_columns if col not in formulas_df.columns]
+            
+            if missing_columns:
+                logger.warning(f"公式文件缺少必要的列: {missing_columns}，跳过公式导入")
+                return
+            
+            for _, row in formulas_df.iterrows():
+                self.execute_cypher("""
+                    MERGE (f:Formula {id: $id})
+                    SET f.expression = $expression,
+                        f.chinese_description = $chinese_description,
+                        f.created_at = datetime()
+                """, {
+                    'id': row[':ID'],
+                    'expression': row['formula_expression'],
+                    'chinese_description': row['formula_chinese']
+                })
+            
+            logger.info(f"导入了 {len(formulas_df)} 个公式")
+            
+        except pd.errors.EmptyDataError:
+            logger.info("公式文件为空，跳过公式导入")
+        except Exception as e:
+            logger.error(f"导入公式失败: {e}")
     
     def create_relationships(self):
         """创建关系"""
@@ -212,54 +314,90 @@ class FinancialMetricsKnowledgeGraph:
             })
         
         # 2. 创建指标到视图的关系
-        metrics_df = pd.read_csv(self.data_dir / "1.metrics_nodes - 工作表1.csv")
-        for _, row in metrics_df.iterrows():
-            if pd.notna(row.get('view_id', '')):
-                self.execute_cypher("""
-                    MATCH (m:FinancialMetric {metric_id: $metric_id})
-                    MATCH (v:View {id: $view_id})
-                    MERGE (m)-[:BELONGS_TO_VIEW]->(v)
-                """, {
-                    'metric_id': row[':ID'],
-                    'view_id': row['view_id']
-                })
+        main_file = self.data_dir / "1.metrics_nodes.csv"
+        if not main_file.exists():
+            main_file = self.data_dir / "1.metrics_nodes - 工作表1.csv"
+        
+        if main_file.exists():
+            try:
+                metrics_df = pd.read_csv(main_file)
+                for _, row in metrics_df.iterrows():
+                    if pd.notna(row.get('view_id', '')):
+                        self.execute_cypher("""
+                            MATCH (m:FinancialMetric {metric_id: $metric_id})
+                            MATCH (v:View {id: $view_id})
+                            MERGE (m)-[:BELONGS_TO_VIEW]->(v)
+                        """, {
+                            'metric_id': row[':ID'],
+                            'view_id': row['view_id']
+                        })
+            except Exception as e:
+                logger.warning(f"创建指标到视图关系失败: {e}")
         
         # 3. 创建指标到公式的关系
-        for _, row in metrics_df.iterrows():
-            if pd.notna(row.get('formula_id', '')):
-                self.execute_cypher("""
-                    MATCH (m:FinancialMetric {metric_id: $metric_id})
-                    MATCH (f:Formula {id: $formula_id})
-                    MERGE (m)-[:CALCULATED_BY]->(f)
-                """, {
-                    'metric_id': row[':ID'],
-                    'formula_id': row['formula_id']
-                })
+        if main_file.exists():
+            try:
+                metrics_df = pd.read_csv(main_file)
+                for _, row in metrics_df.iterrows():
+                    if pd.notna(row.get('formula_id', '')):
+                        self.execute_cypher("""
+                            MATCH (m:FinancialMetric {metric_id: $metric_id})
+                            MATCH (f:Formula {id: $formula_id})
+                            MERGE (m)-[:CALCULATED_BY]->(f)
+                        """, {
+                            'metric_id': row[':ID'],
+                            'formula_id': row['formula_id']
+                        })
+            except Exception as e:
+                logger.warning(f"创建指标到公式关系失败: {e}")
         
         # 4. 创建公式使用的基础指标关系
-        formula_rel_df = pd.read_csv(self.data_dir / "3.formula_relationships - 工作表1.csv")
-        for _, row in formula_rel_df.iterrows():
-            self.execute_cypher("""
-                MATCH (f:Formula {id: $formula_id})
-                MATCH (m:FinancialMetric {metric_id: $metric_id})
-                MERGE (f)-[:USES_METRIC]->(m)
-            """, {
-                'formula_id': row[':START_ID'],
-                'metric_id': row[':END_ID']
-            })
+        formula_rel_file = self.data_dir / "3.formula_relationships.csv"
+        if not formula_rel_file.exists():
+            formula_rel_file = self.data_dir / "3.formula_relationships - 工作表1.csv"
+        
+        if formula_rel_file.exists():
+            try:
+                # 检查文件是否为空
+                if formula_rel_file.stat().st_size > 1:
+                    formula_rel_df = pd.read_csv(formula_rel_file)
+                    if not formula_rel_df.empty and ':START_ID' in formula_rel_df.columns and ':END_ID' in formula_rel_df.columns:
+                        for _, row in formula_rel_df.iterrows():
+                            self.execute_cypher("""
+                                MATCH (f:Formula {id: $formula_id})
+                                MATCH (m:FinancialMetric {metric_id: $metric_id})
+                                MERGE (f)-[:USES_METRIC]->(m)
+                            """, {
+                                'formula_id': row[':START_ID'],
+                                'metric_id': row[':END_ID']
+                            })
+                    else:
+                        logger.info("公式关系文件为空或缺少必要列，跳过")
+                else:
+                    logger.info("公式关系文件为空，跳过")
+            except Exception as e:
+                logger.warning(f"创建公式关系失败: {e}")
         
         # 5. 创建视图层级关系
-        views_df = pd.read_csv(self.data_dir / "4.view_nodes - 工作表1.csv")
-        for _, row in views_df.iterrows():
-            if pd.notna(row['parent_id']):
-                self.execute_cypher("""
-                    MATCH (child:View {id: $child_id})
-                    MATCH (parent:View {id: $parent_id})
-                    MERGE (child)-[:CHILD_OF]->(parent)
-                """, {
-                    'child_id': row[':ID'],
-                    'parent_id': row['parent_id']
-                })
+        views_file = self.data_dir / "4.view_nodes.csv"
+        if not views_file.exists():
+            views_file = self.data_dir / "4.view_nodes - 工作表1.csv"
+        
+        if views_file.exists():
+            try:
+                views_df = pd.read_csv(views_file)
+                for _, row in views_df.iterrows():
+                    if pd.notna(row.get('parent_id')):
+                        self.execute_cypher("""
+                            MATCH (child:View {id: $child_id})
+                            MATCH (parent:View {id: $parent_id})
+                            MERGE (child)-[:CHILD_OF]->(parent)
+                        """, {
+                            'child_id': row[':ID'],
+                            'parent_id': row['parent_id']
+                        })
+            except Exception as e:
+                logger.warning(f"创建视图层级关系失败: {e}")
         
         logger.info("关系创建完成")
     
@@ -435,10 +573,19 @@ class FinancialMetricsKnowledgeGraph:
 
 def main():
     """主函数"""
-    # 配置Neo4j连接参数
-    NEO4J_URI = "bolt://localhost:7687"
-    NEO4J_USER = "neo4j"
-    NEO4J_PASSWORD = "password"  # 请修改为您的密码
+    # 从环境变量获取Neo4j连接参数
+    NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+    NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
+    NEO4J_PASSWORD = os.getenv("NEO4J_PASS")
+    
+    if not NEO4J_PASSWORD:
+        logger.error("未找到NEO4J_PASS环境变量，请检查.env文件")
+        print("\n⚠️  请创建.env文件并设置NEO4J_PASS变量")
+        print("示例:")
+        print("NEO4J_URI=bolt://localhost:7687")
+        print("NEO4J_USER=neo4j")
+        print("NEO4J_PASS=your_password")
+        return
     
     # 创建知识图谱管理器
     kg = FinancialMetricsKnowledgeGraph(NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD)
